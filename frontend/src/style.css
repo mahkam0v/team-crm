@@ -1,0 +1,58 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f5f6f8;
+  color: #1a1a1a;
+}
+#app { max-width: 960px; margin: 0 auto; padding: 24px; }
+
+.card {
+  background: #fff;
+  border: 1px solid #e3e5e8;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+
+.stat-value { font-size: 24px; font-weight: 700; margin: 4px 0; }
+.stat-label { font-size: 13px; color: #666; }
+.negative { color: #d33; }
+.positive { color: #1a9e4e; }
+
+input, textarea, select, button {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid #d5d8dc;
+  border-radius: 6px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  width: auto;
+  padding: 8px 16px;
+}
+button:hover { background: #1d4ed8; }
+
+nav { display: flex; gap: 8px; margin-bottom: 20px; }
+nav button { background: #fff; color: #333; border: 1px solid #d5d8dc; }
+nav button.active { background: #2563eb; color: #fff; }
+
+.list-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+}
+
+.error { color: #d33; font-size: 13px; margin-bottom: 10px; }
+h1 { font-size: 20px; }
+h2 { font-size: 16px; margin-top: 0; }
