@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { Avatar, statusLabel } from '../components/Avatar.jsx';
+import { Skeleton } from '../components/Skeleton.jsx';
 
 export const Profile = () => {
   const { user, refresh } = useAuth();
@@ -33,40 +34,70 @@ export const Profile = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display text-xl font-semibold tracking-tight">Profil sozlamalari</h1>
-        <div className="flex gap-2">
-          <button onClick={handleSave} disabled={saving} className="btn-primary">
-            {saving ? 'Saqlanmoqda...' : saved ? 'Saqlandi ✓' : 'Saqlash'}
-          </button>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 animate-fade-in">
+        <div>
+          <h1 className="font-display text-2xl font-bold tracking-tight">Profil sozlamalari</h1>
+          <p className="text-muted text-[13px] mt-0.5">Shaxsiy ma'lumotlaringizni yangilang</p>
         </div>
+        <button onClick={handleSave} disabled={saving} className="btn-primary group">
+          <span className="flex items-center gap-2">
+            {saving ? (
+              <>
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
+                  <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
+                </svg>
+                Saqlanmoqda...
+              </>
+            ) : saved ? (
+              <>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-positive">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                Saqlandi ✓
+              </>
+            ) : (
+              'Saqlash'
+            )}
+          </span>
+        </button>
       </div>
 
       <div className="grid lg:grid-cols-[2fr_1fr] gap-5">
-        <div className="card">
+        {/* Main form */}
+        <div className="card animate-fade-in stagger-1">
           <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted mb-4">Shaxsiy ma'lumotlar</h2>
 
-          <div className="flex items-center gap-4 mb-5">
+          <div className="flex items-center gap-4 mb-6 p-4 bg-white/[0.02] rounded-xl border border-white/5">
             <Avatar username={user.username} size={16} showStatus={form.status} />
             <div>
               <div className="text-[15px] font-semibold">{user.username}</div>
               <div className="text-[12.5px] text-muted">{user.email}</div>
+              <div className="mt-1">
+                <span className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded-md ${
+                  user.role === 'SUPER_ADMIN' ? 'bg-negative/15 text-negative' :
+                  user.role === 'ADMIN' ? 'bg-warning/15 text-warning' : 'bg-accent/15 text-accent'
+                }`}>
+                  {user.role}
+                </span>
+              </div>
             </div>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3 mb-3">
             <div>
-              <label className="text-[11.5px] text-muted block mb-1">Username</label>
-              <input className="field mb-0" value={user.username} disabled />
+              <label className="text-[11.5px] text-muted block mb-1.5">Username</label>
+              <input className="field mb-0 bg-white/5" value={user.username} disabled />
             </div>
             <div>
-              <label className="text-[11.5px] text-muted block mb-1">Email</label>
-              <input className="field mb-0" value={user.email} disabled />
+              <label className="text-[11.5px] text-muted block mb-1.5">Email</label>
+              <input className="field mb-0 bg-white/5" value={user.email} disabled />
             </div>
           </div>
 
           <div className="mb-3">
-            <label className="text-[11.5px] text-muted block mb-1">Holat</label>
+            <label className="text-[11.5px] text-muted block mb-1.5">Holat</label>
             <select className="field mb-0" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
               <option value="AVAILABLE">🟢 Mavjud</option>
               <option value="BUSY">🟡 Band</option>
@@ -76,7 +107,7 @@ export const Profile = () => {
           </div>
 
           <div className="mb-3">
-            <label className="text-[11.5px] text-muted block mb-1">Hozir nima ustida ishlayapsiz</label>
+            <label className="text-[11.5px] text-muted block mb-1.5">Hozir nima ustida ishlayapsiz</label>
             <input
               className="field mb-0"
               placeholder="masalan: CRM loyihasi frontend qismi"
@@ -86,7 +117,7 @@ export const Profile = () => {
           </div>
 
           <div>
-            <label className="text-[11.5px] text-muted block mb-1">Qisqacha tavsif</label>
+            <label className="text-[11.5px] text-muted block mb-1.5">Qisqacha tavsif</label>
             <textarea
               className="field mb-0"
               rows={3}
@@ -97,39 +128,56 @@ export const Profile = () => {
           </div>
         </div>
 
-        <div className="space-y-4">
+        {/* Sidebar */}
+        <div className="space-y-4 animate-fade-in stagger-2">
+          {/* Account info */}
           <div className="card">
             <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted mb-1">Akkaunt</h2>
-            <div className="text-[12.5px] text-muted space-y-1.5 mt-2">
-              <div className="flex justify-between"><span>Rol</span><span className="text-accent font-mono text-[11px]">{user.role}</span></div>
-              <div className="flex justify-between"><span>Qo'shilgan sana</span><span>{new Date(user.createdAt).toLocaleDateString('uz-UZ')}</span></div>
-              <div className="flex justify-between"><span>Holat</span><span>{statusLabel[form.status]}</span></div>
+            <div className="text-[12.5px] text-muted space-y-2 mt-3">
+              <div className="flex justify-between py-1 border-b border-border/50">
+                <span>Rol</span>
+                <span className={`text-[11px] font-mono uppercase px-2 py-0.5 rounded-md ${
+                  user.role === 'SUPER_ADMIN' ? 'bg-negative/15 text-negative' :
+                  user.role === 'ADMIN' ? 'bg-warning/15 text-warning' : 'bg-accent/15 text-accent'
+                }`}>{user.role}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border/50">
+                <span>Qo'shilgan sana</span>
+                <span>{new Date(user.createdAt).toLocaleDateString('uz-UZ')}</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span>Holat</span>
+                <span>{statusLabel[form.status]}</span>
+              </div>
             </div>
           </div>
 
+          {/* Stats */}
           <div className="card">
             <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted mb-3">Faoliyat statistikasi</h2>
             {stats ? (
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <div className="num text-[20px]">{stats.projectsCount}</div>
-                  <div className="text-[11px] text-muted">Loyihada ishtirok</div>
-                </div>
-                <div>
-                  <div className="num text-[20px]">{stats.completedTasks}</div>
-                  <div className="text-[11px] text-muted">Bajarilgan vazifa</div>
-                </div>
-                <div>
-                  <div className="num text-[20px]">{stats.achievementsCount}</div>
-                  <div className="text-[11px] text-muted">Yutuqlar</div>
-                </div>
-                <div>
-                  <div className="num text-[20px]">{stats.activeDays}</div>
-                  <div className="text-[11px] text-muted">Faol kunlar</div>
-                </div>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { value: stats.projectsCount, label: 'Loyihada ishtirok', color: 'text-accent' },
+                  { value: stats.completedTasks, label: 'Bajarilgan vazifa', color: 'text-positive' },
+                  { value: stats.achievementsCount, label: 'Yutuqlar', color: 'text-warning' },
+                  { value: stats.activeDays, label: 'Faol kunlar', color: 'text-white' },
+                ].map((s) => (
+                  <div key={s.label} className="text-center p-3 bg-white/[0.02] rounded-lg border border-white/5">
+                    <div className={`num text-[22px] font-bold ${s.color}`}>{s.value}</div>
+                    <div className="text-[11px] text-muted mt-0.5">{s.label}</div>
+                  </div>
+                ))}
               </div>
             ) : (
-              <p className="text-muted text-[12.5px]">Yuklanmoqda...</p>
+              <div className="space-y-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <Skeleton className="w-12 h-12" />
+                    <Skeleton className="h-4 flex-1" />
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>

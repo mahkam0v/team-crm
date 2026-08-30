@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import { Layout } from './components/Layout.jsx';
 import { Login } from './pages/Login.jsx';
@@ -11,10 +11,24 @@ import { Tasks } from './pages/Tasks.jsx';
 import { Finance } from './pages/Finance.jsx';
 import { Admin } from './pages/Admin.jsx';
 import { Profile } from './pages/Profile.jsx';
+import { useEffect } from 'react';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+};
 
 const Protected = ({ children }) => {
   const { user, loading } = useAuth();
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-muted text-sm">Yuklanmoqda...</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-ink">
+      <div className="flex flex-col items-center gap-3 animate-fade-in">
+        <div className="w-10 h-10 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+        <p className="text-muted text-sm">Yuklanmoqda...</p>
+      </div>
+    </div>
+  );
   if (!user) return <Navigate to="/login" replace />;
   return <Layout>{children}</Layout>;
 };
@@ -26,18 +40,21 @@ const AdminOnly = ({ children }) => {
 };
 
 const AppRoutes = () => (
-  <Routes>
-    <Route path="/login" element={<Login />} />
-    <Route path="/register" element={<Register />} />
-    <Route path="/" element={<Protected><Dashboard /></Protected>} />
-    <Route path="/projects" element={<Protected><Projects /></Protected>} />
-    <Route path="/projects/new" element={<Protected><ProjectNew /></Protected>} />
-    <Route path="/projects/:id" element={<Protected><ProjectDetail /></Protected>} />
-    <Route path="/tasks" element={<Protected><Tasks /></Protected>} />
-    <Route path="/finance" element={<Protected><Finance /></Protected>} />
-    <Route path="/admin" element={<Protected><AdminOnly><Admin /></AdminOnly></Protected>} />
-    <Route path="/profile" element={<Protected><Profile /></Protected>} />
-  </Routes>
+  <>
+    <ScrollToTop />
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/" element={<Protected><Dashboard /></Protected>} />
+      <Route path="/projects" element={<Protected><Projects /></Protected>} />
+      <Route path="/projects/new" element={<Protected><ProjectNew /></Protected>} />
+      <Route path="/projects/:id" element={<Protected><ProjectDetail /></Protected>} />
+      <Route path="/tasks" element={<Protected><Tasks /></Protected>} />
+      <Route path="/finance" element={<Protected><Finance /></Protected>} />
+      <Route path="/admin" element={<Protected><AdminOnly><Admin /></AdminOnly></Protected>} />
+      <Route path="/profile" element={<Protected><Profile /></Protected>} />
+    </Routes>
+  </>
 );
 
 export const App = () => (
