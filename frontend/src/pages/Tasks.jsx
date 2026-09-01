@@ -1,21 +1,36 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { Skeleton } from '../components/Skeleton.jsx';
+import { Icon } from '../components/Icon.jsx';
 
 const statuses = ['TODO', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
 const statusLabels = { TODO: 'Todo', IN_PROGRESS: 'Jarayonda', COMPLETED: 'Bajarildi', CANCELLED: 'Bekor qilindi' };
+const statusIcons = { TODO: 'clipboard', IN_PROGRESS: 'zap', COMPLETED: 'check_circle', CANCELLED: 'x_circle' };
 const statusColors = {
-  TODO: 'bg-muted/15 text-muted',
-  IN_PROGRESS: 'bg-accent/15 text-accent',
-  COMPLETED: 'bg-positive/15 text-positive',
-  CANCELLED: 'bg-negative/15 text-negative',
+  TODO: 'text-muted',
+  IN_PROGRESS: 'text-accent',
+  COMPLETED: 'text-positive',
+  CANCELLED: 'text-negative',
+};
+const statusBg = {
+  TODO: 'bg-white/[0.04]',
+  IN_PROGRESS: 'bg-accent/8',
+  COMPLETED: 'bg-positive/8',
+  CANCELLED: 'bg-negative/8',
 };
 const priorityConfig = {
-  LOW: { color: 'text-muted', bg: 'bg-muted/10', icon: '↓' },
-  MEDIUM: { color: 'text-accent', bg: 'bg-accent/10', icon: '→' },
-  HIGH: { color: 'text-warning', bg: 'bg-warning/10', icon: '↑' },
-  URGENT: { color: 'text-negative', bg: 'bg-negative/10', icon: '⚡' },
+  LOW: { color: 'text-muted/60', bg: 'bg-white/[0.04]', icon: 'arrow_down', label: 'Past' },
+  MEDIUM: { color: 'text-accent', bg: 'bg-accent/8', icon: 'arrow_right', label: "O'rtacha" },
+  HIGH: { color: 'text-warning', bg: 'bg-warning/8', icon: 'arrow_up', label: 'Yuqori' },
+  URGENT: { color: 'text-rose', bg: 'bg-rose/8', icon: 'zap', label: 'Shoshilinch' },
 };
+
+const priorityOptions = [
+  { value: 'LOW', label: 'Past' },
+  { value: 'MEDIUM', label: "O'rtacha" },
+  { value: 'HIGH', label: 'Yuqori' },
+  { value: 'URGENT', label: 'Shoshilinch' },
+];
 
 export const Tasks = () => {
   const [tasks, setTasks] = useState([]);
@@ -23,6 +38,10 @@ export const Tasks = () => {
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState('MEDIUM');
   const [error, setError] = useState('');
+  const [view, setView] = useState('kanban');
+  const [search, setSearch] = useState('');
+  const [filterPriority, setFilterPriority] = useState('');
+  const [draggedTask, setDraggedTask] = useState(null);
 
   const load = () => api.listTasks().then((r) => setTasks(r.tasks)).finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
@@ -34,6 +53,7 @@ export const Tasks = () => {
     try {
       await api.createTask({ title, priority });
       setTitle('');
+      setPriority('MEDIUM');
       load();
     } catch (err) {
       setError(err.message);
@@ -45,6 +65,36 @@ export const Tasks = () => {
     await api.updateTask(id, { status });
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Vazifani o\'chirmoqchimisiz?')) return;
+    setTasks((ts) => ts.filter((t) => t.id !== id));
+    await api.deleteTask(id);
+  };
+
+  const handleDragStart = (e, taskId) => {
+    setDraggedTask(taskId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e, status) => {
+    e.preventDefault();
+    if (draggedTask) {
+      handleStatusChange(draggedTask, status);
+      setDraggedTask(null);
+    }
+  };
+
+  const filteredTasks = tasks.filter((t) => {
+    if (search && !t.title.toLowerCase().includes(search.toLowerCase())) return false;
+    if (filterPriority && t.priority !== filterPriority) return false;
+    return true;
+  });
+
   const taskStats = {
     total: tasks.length,
     completed: tasks.filter((t) => t.status === 'COMPLETED').length,
@@ -52,36 +102,92 @@ export const Tasks = () => {
     todo: tasks.filter((t) => t.status === 'TODO').length,
   };
 
+  const completionRate = tasks.length > 0 ? Math.round((taskStats.completed / tasks.length) * 100) : 0;
+
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 animate-fade-in">
-        <h1 className="font-display text-2xl font-bold tracking-tight">Vazifalar</h1>
-        <p className="text-muted text-[13px] mt-0.5">{tasks.length} ta vazifa mavjud</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
+        <div>
+          <h1 className="font-display text-[24px] font-bold tracking-tight animate-fade-in">
+            <span className="gradient-text">Vazifalar</span>
+          </h1>
+          <p className="text-muted/60 text-[12.5px] mt-0.5 animate-fade-in stagger-1">
+            {tasks.length} ta vazifa · {completionRate}% bajarildi
+          </p>
+        </div>
+        <div className="segment animate-fade-in stagger-2">
+          <button
+            onClick={() => setView('kanban')}
+            className={`segment-btn flex items-center gap-1.5 ${view === 'kanban' ? 'active' : ''}`}
+          >
+            <Icon name="grid" className="w-3 h-3" />
+            Kanban
+          </button>
+          <button
+            onClick={() => setView('list')}
+            className={`segment-btn flex items-center gap-1.5 ${view === 'list' ? 'active' : ''}`}
+          >
+            <Icon name="list" className="w-3 h-3" />
+            Ro'yxat
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
       {!loading && tasks.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5 animate-fade-in stagger-1">
           {[
-            { label: 'Jami', value: taskStats.total, color: 'text-white' },
-            { label: 'Bajarilgan', value: taskStats.completed, color: 'text-positive' },
-            { label: 'Jarayonda', value: taskStats.inProgress, color: 'text-accent' },
-            { label: 'Todo', value: taskStats.todo, color: 'text-muted' },
+            { label: 'Jami', value: taskStats.total, icon: 'clipboard', color: 'text-white' },
+            { label: 'Bajarilgan', value: taskStats.completed, icon: 'check_circle', color: 'text-positive' },
+            { label: 'Jarayonda', value: taskStats.inProgress, icon: 'zap', color: 'text-accent' },
+            { label: 'Todo', value: taskStats.todo, icon: 'file_text', color: 'text-muted' },
           ].map((s) => (
-            <div key={s.label} className="card py-3 px-4 text-center">
+            <div key={s.label} className="card py-3 px-4 text-center group hover:border-white/[0.08] transition-all duration-200">
+              <Icon name={s.icon} className={`w-4 h-4 mx-auto mb-1.5 ${s.color} opacity-50`} />
               <div className={`num text-[20px] font-bold ${s.color}`}>{s.value}</div>
-              <div className="text-[11px] text-muted mt-0.5">{s.label}</div>
+              <div className="text-[10.5px] text-muted/50 mt-0.5">{s.label}</div>
             </div>
           ))}
         </div>
       )}
 
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2 mb-4 animate-fade-in stagger-2">
+        <div className="relative flex-1 max-w-xs">
+          <Icon name="search" className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted/40" />
+          <input
+            className="field mb-0 pl-8 text-[12.5px]"
+            placeholder="Vazifa qidirish..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <div className="flex gap-0.5 bg-white/[0.03] border border-white/[0.05] rounded-lg p-0.5">
+          <button
+            onClick={() => setFilterPriority('')}
+            className={`segment-btn text-[11px] ${!filterPriority ? 'active' : ''}`}
+          >
+            Hammasi
+          </button>
+          {Object.entries(priorityConfig).map(([key, cfg]) => (
+            <button
+              key={key}
+              onClick={() => setFilterPriority(key === filterPriority ? '' : key)}
+              className={`segment-btn text-[11px] flex items-center gap-1 ${filterPriority === key ? 'active' : ''}`}
+            >
+              <Icon name={cfg.icon} className="w-2.5 h-2.5" strokeWidth={2.5} />
+              {cfg.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Create form */}
-      <form onSubmit={handleCreate} className="card mb-5 animate-fade-in stagger-2">
-        <h2 className="text-[13px] font-semibold uppercase tracking-wide text-muted mb-3">Yangi vazifa</h2>
+      <form onSubmit={handleCreate} className="card mb-5 animate-fade-in stagger-3">
+        <h2 className="section-heading"><h2>Yangi vazifa</h2></h2>
         {error && (
-          <div className="bg-negative/10 border border-negative/20 text-negative text-[12.5px] rounded-lg px-3 py-2 mb-3 animate-fade-in">
+          <div className="bg-negative/8 border border-negative/15 text-negative text-[12px] rounded-lg px-3 py-2 mb-3 animate-fade-in">
             {error}
           </div>
         )}
@@ -93,68 +199,144 @@ export const Tasks = () => {
             onChange={(e) => setTitle(e.target.value)}
           />
           <select className="field mb-0" value={priority} onChange={(e) => setPriority(e.target.value)}>
-            <option value="LOW">Past</option>
-            <option value="MEDIUM">O'rtacha</option>
-            <option value="HIGH">Yuqori</option>
-            <option value="URGENT">Shoshilinch</option>
+            {priorityOptions.map((p) => (
+              <option key={p.value} value={p.value}>{p.label}</option>
+            ))}
           </select>
           <button className="btn-primary">
             <span className="flex items-center gap-1.5">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
+              <Icon name="plus" className="w-3.5 h-3.5" strokeWidth={2.5} />
               Qo'shish
             </span>
           </button>
         </div>
       </form>
 
-      {/* Tasks list */}
-      <div className="card animate-fade-in stagger-3">
-        <h2 className="text-[13px] font-semibold uppercase tracking-wide text-muted mb-1">Barcha vazifalar</h2>
-        {loading ? (
-          <div className="space-y-3 py-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <Skeleton className="w-12 h-5" />
-                <Skeleton className="h-4 flex-1" />
-                <Skeleton className="w-[150px] h-8" />
-              </div>
-            ))}
-          </div>
-        ) : tasks.length === 0 ? (
-          <p className="text-muted text-sm py-8 text-center">Hali vazifa yo'q</p>
-        ) : (
-          <div className="space-y-0.5">
-            {tasks.map((t, i) => {
-              const config = priorityConfig[t.priority] || priorityConfig.MEDIUM;
-              return (
-                <div
-                  key={t.id}
-                  className="flex items-center justify-between py-3 border-b border-border/50 last:border-0 gap-3 group hover:bg-white/[0.02] px-2 -mx-2 rounded-lg transition-all duration-200"
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md ${config.bg} ${config.color} flex items-center gap-1`}>
-                      <span>{config.icon}</span>
-                      {t.priority}
-                    </span>
-                    <span className="text-[13.5px] truncate group-hover:text-white transition-colors">{t.title}</span>
+      {/* Kanban View */}
+      {view === 'kanban' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 animate-fade-in stagger-4">
+          {statuses.map((status) => {
+            const statusTasks = filteredTasks.filter((t) => t.status === status);
+            return (
+              <div
+                key={status}
+                className="kanban-column"
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, status)}
+              >
+                <div className="flex items-center justify-between mb-1 px-1">
+                  <div className="flex items-center gap-1.5">
+                    <Icon name={statusIcons[status]} className={`w-3.5 h-3.5 ${statusColors[status]}`} strokeWidth={2} />
+                    <span className="text-[12px] font-semibold text-white/70">{statusLabels[status]}</span>
                   </div>
-                  <select
-                    value={t.status}
-                    onChange={(e) => handleStatusChange(t.id, e.target.value)}
-                    className={`field mb-0 w-[150px] py-1.5 text-[12.5px] ${statusColors[t.status]}`}
-                  >
-                    {statuses.map((s) => (
-                      <option key={s} value={s}>{statusLabels[s]}</option>
-                    ))}
-                  </select>
+                  <span className="text-[10px] font-mono text-muted/40 bg-white/[0.03] px-1.5 py-0.5 rounded">
+                    {statusTasks.length}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                {statusTasks.length === 0 ? (
+                  <div className="flex items-center justify-center h-16 text-[11px] text-muted/25 border border-dashed border-white/[0.06] rounded-lg">
+                    Bo'sh
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    {statusTasks.map((t) => {
+                      const config = priorityConfig[t.priority] || priorityConfig.MEDIUM;
+                      return (
+                        <div
+                          key={t.id}
+                          className={`kanban-card ${draggedTask === t.id ? 'dragging' : ''}`}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, t.id)}
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-1.5">
+                            <span className={`text-[9.5px] font-medium px-1.5 py-0.5 rounded ${config.bg} ${config.color} flex items-center gap-1`}>
+                              <Icon name={config.icon} className="w-2 h-2" strokeWidth={2.5} />
+                              {t.priority}
+                            </span>
+                            <button
+                              onClick={() => handleDelete(t.id)}
+                              className="text-muted/20 hover:text-negative transition-colors p-0.5 rounded hover:bg-negative/10 opacity-0 group-hover:opacity-100"
+                            >
+                              <Icon name="x" className="w-3 h-3" />
+                            </button>
+                          </div>
+                          <p className="text-[12.5px] text-white/80 leading-snug">{t.title}</p>
+                          <div className="mt-2 pt-2 border-t border-white/[0.04]">
+                            <select
+                              value={t.status}
+                              onChange={(e) => handleStatusChange(t.id, e.target.value)}
+                              className="w-full text-[10.5px] bg-white/[0.03] border border-white/[0.04] text-muted/60 rounded-md px-2 py-1 focus:outline-none focus:border-accent/30 transition-colors"
+                            >
+                              {statuses.map((s) => (
+                                <option key={s} value={s}>{statusLabels[s]}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* List View */
+        <div className="card animate-fade-in stagger-4">
+          <h2 className="section-heading"><h2>Barcha vazifalar</h2></h2>
+          {loading ? (
+            <div className="space-y-2 py-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <Skeleton className="w-16 h-5" />
+                  <Skeleton className="h-4 flex-1" />
+                  <Skeleton className="w-28 h-7" />
+                </div>
+              ))}
+            </div>
+          ) : filteredTasks.length === 0 ? (
+            <p className="text-muted/40 text-[12.5px] py-10 text-center">Vazifa topilmadi</p>
+          ) : (
+            <div className="space-y-0">
+              {filteredTasks.map((t) => {
+                const config = priorityConfig[t.priority] || priorityConfig.MEDIUM;
+                return (
+                  <div
+                    key={t.id}
+                    className="flex items-center justify-between py-2.5 border-b border-white/[0.03] last:border-0 gap-3 group hover:bg-white/[0.02] px-2 -mx-2 rounded-lg transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className={`text-[9.5px] font-medium uppercase px-1.5 py-0.5 rounded ${config.bg} ${config.color} flex items-center gap-1 shrink-0`}>
+                        <Icon name={config.icon} className="w-2 h-2" strokeWidth={2.5} />
+                        {t.priority}
+                      </span>
+                      <span className="text-[12.5px] truncate text-white/70 group-hover:text-white transition-colors">{t.title}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <select
+                        value={t.status}
+                        onChange={(e) => handleStatusChange(t.id, e.target.value)}
+                        className="field mb-0 w-[130px] py-1 text-[11.5px]"
+                      >
+                        {statuses.map((s) => (
+                          <option key={s} value={s}>{statusLabels[s]}</option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => handleDelete(t.id)}
+                        className="text-muted/20 hover:text-negative transition-colors p-1 rounded hover:bg-negative/8"
+                      >
+                        <Icon name="trash" className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

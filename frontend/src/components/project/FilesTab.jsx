@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../../api.js';
+import { Icon } from '../Icon.jsx';
 
 const fileIcon = (mime = '') => {
-  if (mime.includes('pdf')) return '📄';
-  if (mime.includes('image')) return '🖼️';
-  if (mime.includes('sheet') || mime.includes('excel')) return '📊';
-  if (mime.includes('word') || mime.includes('document')) return '📝';
-  return '📎';
+  if (mime.includes('pdf')) return 'file_text';
+  if (mime.includes('image')) return 'image';
+  if (mime.includes('sheet') || mime.includes('excel')) return 'bar_chart';
+  if (mime.includes('word') || mime.includes('document')) return 'file_text';
+  return 'paperclip';
 };
 
 export const FilesTab = ({ entityType, entityId }) => {
@@ -33,29 +34,32 @@ export const FilesTab = ({ entityType, entityId }) => {
 
   return (
     <div className="card">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted">Fayllar</h2>
-        <label className="btn-primary cursor-pointer">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="section-heading"><h2>Fayllar</h2></h2>
+        <label className="btn-primary cursor-pointer text-[12px]">
           {uploading ? 'Yuklanmoqda...' : 'Fayl yuklash'}
           <input ref={inputRef} type="file" className="hidden" onChange={handleUpload} disabled={uploading} />
         </label>
       </div>
 
       {loading ? (
-        <p className="text-muted text-sm py-4">Yuklanmoqda...</p>
+        <p className="text-muted/50 text-[12.5px] py-4">Yuklanmoqda...</p>
       ) : files.length === 0 ? (
-        <p className="text-muted text-sm py-6 text-center">Hali fayl yo'q</p>
+        <p className="text-muted/30 text-[12.5px] py-6 text-center">Hali fayl yo'q</p>
       ) : (
         files.map((f) => (
-          <div key={f.id} className="flex items-center justify-between py-2.5 border-b border-border last:border-0">
+          <div key={f.id} className="flex items-center justify-between py-2.5 border-b border-white/[0.03] last:border-0 group hover:bg-white/[0.02] px-2 -mx-2 rounded-lg transition-colors">
             <div className="flex items-center gap-2.5 min-w-0">
-              <span className="text-[16px]">{fileIcon(f.mimeType)}</span>
-              <span className="text-[13px] truncate">{f.originalName}</span>
+              <div className="w-7 h-7 rounded-lg bg-white/[0.03] flex items-center justify-center shrink-0">
+                <Icon name={fileIcon(f.mimeType)} className="w-3.5 h-3.5 text-muted/40" />
+              </div>
+              <span className="text-[12.5px] truncate text-white/70">{f.originalName}</span>
             </div>
             <button
               onClick={() => api.downloadFile(f.id, f.originalName)}
-              className="text-[12px] text-accent hover:underline shrink-0"
+              className="text-[11px] text-accent hover:text-accent-light transition-colors shrink-0 flex items-center gap-1"
             >
+              <Icon name="download" className="w-3 h-3" />
               Yuklab olish
             </button>
           </div>

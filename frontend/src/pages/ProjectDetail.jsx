@@ -12,17 +12,18 @@ import { ChatTab } from '../components/project/ChatTab.jsx';
 import { MembersTab } from '../components/project/MembersTab.jsx';
 import { ActivityTab } from '../components/project/ActivityTab.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { Icon } from '../components/Icon.jsx';
 
 const tabs = [
-  { key: 'overview', label: 'Overview' },
-  { key: 'tasks', label: 'Vazifalar' },
-  { key: 'finance', label: 'Moliya' },
-  { key: 'calendar', label: 'Kalendar' },
-  { key: 'files', label: 'Fayllar' },
-  { key: 'notes', label: 'Eslatmalar' },
-  { key: 'chat', label: 'Chat' },
-  { key: 'members', label: "A'zolar" },
-  { key: 'activity', label: 'Faoliyat' },
+  { key: 'overview', label: 'Overview', icon: 'eye' },
+  { key: 'tasks', label: 'Vazifalar', icon: 'tasks' },
+  { key: 'finance', label: 'Moliya', icon: 'finance' },
+  { key: 'calendar', label: 'Kalendar', icon: 'calendar' },
+  { key: 'files', label: 'Fayllar', icon: 'file' },
+  { key: 'notes', label: 'Eslatmalar', icon: 'file_text' },
+  { key: 'chat', label: 'Chat', icon: 'message_square' },
+  { key: 'members', label: "A'zolar", icon: 'users' },
+  { key: 'activity', label: 'Faoliyat', icon: 'activity' },
 ];
 
 export const ProjectDetail = () => {
@@ -37,7 +38,6 @@ export const ProjectDetail = () => {
   const loadProject = () => api.getProject(id).then((r) => setProject(r.project)).finally(() => setLoading(false));
   useEffect(() => { loadProject(); }, [id]);
 
-  // lightweight "unread" indicator: compare chat length against last-seen count stored locally
   useEffect(() => {
     api.getProjectChat(id).then((r) => {
       const seenKey = `chat-seen-${id}`;
@@ -57,44 +57,50 @@ export const ProjectDetail = () => {
     navigate('/projects');
   };
 
-  if (loading) return <p className="text-muted text-sm">Yuklanmoqda...</p>;
-  if (!project) return <p className="text-negative text-sm">Loyiha topilmadi</p>;
+  if (loading) return <p className="text-muted/50 text-[13px]">Yuklanmoqda...</p>;
+  if (!project) return <p className="text-negative text-[13px]">Loyiha topilmadi</p>;
 
   const canManage = project.ownerId === currentUser.id || ['ADMIN', 'SUPER_ADMIN'].includes(currentUser.role);
 
   return (
     <div>
-      <div className="mb-1">
-        <Link to="/projects" className="text-[12.5px] text-muted hover:text-white">&larr; Loyihalar</Link>
+      <div className="mb-2">
+        <Link to="/projects" className="text-[12px] text-muted/40 hover:text-white/70 flex items-center gap-1 transition-colors">
+          <Icon name="arrow_left" className="w-3 h-3" />
+          Loyihalar
+        </Link>
       </div>
       <div className="flex items-center justify-between mb-1">
         <h1 className="font-display text-xl font-semibold tracking-tight">{project.name}</h1>
         <div className="flex items-center gap-2">
           <StatusBadge status={project.status} />
           {canManage && (
-            <button onClick={handleDelete} className="text-[11.5px] text-negative hover:underline ml-2">
+            <button onClick={handleDelete} className="btn-danger text-[11px] py-1 px-2 flex items-center gap-1">
+              <Icon name="trash" className="w-3 h-3" />
               O'chirish
             </button>
           )}
         </div>
       </div>
-      <div className="flex items-center gap-2 mb-5">
+      <div className="flex items-center gap-2 mb-4">
         <PriorityBadge priority={project.priority} />
-        {project.client && <span className="text-[12px] text-muted">Mijoz: {project.client}</span>}
+        {project.client && <span className="text-[11.5px] text-muted/40">Mijoz: {project.client}</span>}
       </div>
 
-      <div className="flex gap-1 border-b border-border mb-6 overflow-x-auto">
+      {/* Tabs */}
+      <div className="flex gap-0.5 border-b border-white/[0.04] mb-5 overflow-x-auto">
         {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => (t.key === 'chat' ? handleOpenChat() : setTab(t.key))}
-            className={`relative text-[13px] font-medium px-3.5 py-2.5 whitespace-nowrap border-b-2 transition-colors ${
-              tab === t.key ? 'border-accent text-white' : 'border-transparent text-muted hover:text-white'
+            className={`relative flex items-center gap-1.5 text-[12px] font-medium px-3 py-2.5 whitespace-nowrap border-b-2 transition-colors ${
+              tab === t.key ? 'border-accent text-white' : 'border-transparent text-muted/50 hover:text-white/70'
             }`}
           >
+            <Icon name={t.icon} className="w-3.5 h-3.5" strokeWidth={1.8} />
             {t.label}
             {t.key === 'chat' && unreadChat > 0 && (
-              <span className="ml-1.5 inline-flex items-center justify-center text-[10px] w-4 h-4 rounded-full bg-negative text-white align-middle">
+              <span className="ml-0.5 inline-flex items-center justify-center text-[9px] w-3.5 h-3.5 rounded-full bg-negative text-white">
                 {unreadChat}
               </span>
             )}

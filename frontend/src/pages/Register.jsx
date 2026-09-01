@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { Icon } from '../components/Icon.jsx';
 
 export const Register = () => {
   const { register } = useAuth();
@@ -8,6 +9,7 @@ export const Register = () => {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,60 +26,56 @@ export const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex relative overflow-hidden">
+    <div className="min-h-screen flex relative overflow-hidden bg-ink">
       {/* Left side — branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(135deg, #12141C 0%, #1a2e1b 30%, #1B4528 60%, #12141C 100%)',
-          }}
-        />
+      <div className="hidden lg:flex lg:w-[55%] relative items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 bg-mesh-1" />
 
-        <div className="absolute top-1/3 left-1/3 w-64 h-64 bg-positive/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-1/3 right-1/3 w-48 h-48 bg-accent/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-positive/6 rounded-full blur-[100px] animate-float" />
+        <div className="absolute bottom-1/3 right-1/3 w-56 h-56 bg-accent/6 rounded-full blur-[100px] animate-float" style={{ animationDelay: '1.5s' }} />
 
         <div
-          className="absolute inset-0 opacity-5"
+          className="absolute inset-0 opacity-[0.025]"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(52,211,153,0.3) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(52,211,153,0.3) 1px, transparent 1px)
+              linear-gradient(rgba(34,197,94,0.4) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(34,197,94,0.4) 1px, transparent 1px)
             `,
-            backgroundSize: '40px 40px',
+            backgroundSize: '48px 48px',
           }}
         />
 
-        <div className="relative z-10 text-center px-12 animate-fade-in">
-          <div className="w-20 h-20 rounded-2xl bg-positive/20 flex items-center justify-center mx-auto mb-8 animate-pulse-glow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10 text-positive">
-              <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M12.5 11a4 4 0 100-8 4 4 0 000 8zM20 8v6M23 11h-6" />
-            </svg>
+        <div className="relative z-10 text-center px-16 animate-fade-in">
+          <div className="w-20 h-20 rounded-2xl bg-positive flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-positive/15 animate-pulse-glow">
+            <Icon name="users" className="w-10 h-10 text-white" strokeWidth={1.5} />
           </div>
 
-          <h1 className="font-display text-4xl font-bold mb-4">
+          <h1 className="font-display text-5xl font-bold mb-4 tracking-tight">
             <span className="text-white">Jamoa</span>
             <span className="text-positive"> ga qo'shiling</span>
           </h1>
 
-          <p className="text-muted text-lg max-w-sm mx-auto leading-relaxed">
+          <p className="text-muted/60 text-lg max-w-md mx-auto leading-relaxed">
             Bepul ro'yxatdan o'ting va jamoangiz bilan birga loyihalarni boshqaring.
           </p>
 
           <div className="flex items-center justify-center gap-6 mt-10">
             {[
-              { icon: '🚀', label: 'Tez boshlash' },
-              { icon: '🔒', label: 'Xavfsiz' },
-              { icon: '💳', label: 'Bepul' },
+              { icon: 'zap', label: 'Tez boshlash', desc: '1 daqiqada tayyor' },
+              { icon: 'shield', label: 'Xavfsiz', desc: "Ma'lumotlar himoyalangan" },
+              { icon: 'lock', label: 'Bepul', desc: 'Kredit kartasi talab qilinmaydi' },
             ].map((item, i) => (
               <div
                 key={i}
-                className={`flex flex-col items-center gap-2 animate-fade-in stagger-${i + 2}`}
+                className={`flex flex-col items-center gap-2.5 animate-fade-in stagger-${i + 2}`}
               >
-                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xl">
-                  {item.icon}
+                <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-200">
+                  <Icon name={item.icon} className="w-5 h-5 text-white/30" />
                 </div>
-                <span className="text-[11px] text-muted">{item.label}</span>
+                <div>
+                  <div className="text-[11.5px] font-medium text-white/70">{item.label}</div>
+                  <div className="text-[10px] text-muted/35">{item.desc}</div>
+                </div>
               </div>
             ))}
           </div>
@@ -87,33 +85,38 @@ export const Register = () => {
       {/* Right side — form */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12 relative">
         <div className="absolute inset-0 bg-ink" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-positive/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-positive/4 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-accent/4 rounded-full blur-[80px]" />
 
         <div className="w-full max-w-[380px] relative z-10 animate-fade-in-scale">
           <div className="lg:hidden text-center mb-8">
-            <h1 className="font-display text-3xl font-bold">
+            <div className="w-14 h-14 rounded-xl bg-positive flex items-center justify-center mx-auto mb-4">
+              <Icon name="users" className="w-7 h-7 text-white" strokeWidth={1.5} />
+            </div>
+            <h1 className="font-display text-2xl font-bold">
               <span className="gradient-text">Team</span>
-              <span className="text-accent">CRM</span>
+              <span className="text-white">CRM</span>
             </h1>
           </div>
 
-          <div className="card bg-surface/80 backdrop-blur-xl border-white/10 shadow-2xl">
-            <h2 className="font-display text-xl font-semibold tracking-tight mb-1">
+          <div className="card bg-surface/80 backdrop-blur-xl border-white/[0.06] shadow-elevated p-6">
+            <h2 className="font-display text-xl font-bold tracking-tight mb-0.5">
               Hisob yaratish
             </h2>
-            <p className="text-muted text-[13px] mb-6">Birinchi ro'yxatdan o'tgan user Super Admin bo'ladi</p>
+            <p className="text-muted/50 text-[13px] mb-6">Birinchi ro'yxatdan o'tgan user Super Admin bo'ladi</p>
 
             {error && (
-              <div className="bg-negative/10 border border-negative/20 text-negative text-[12.5px] rounded-lg px-3 py-2 mb-4 animate-fade-in">
+              <div className="bg-negative/8 border border-negative/15 text-negative text-[12px] rounded-lg px-3 py-2.5 mb-4 animate-fade-in flex items-center gap-2">
+                <Icon name="alert_triangle" className="w-3.5 h-3.5 shrink-0" />
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-3.5">
               <div>
-                <label className="text-[11.5px] text-muted block mb-1.5">Username</label>
+                <label className="text-[11px] text-muted/50 block mb-1.5 font-medium">Username</label>
                 <input
-                  className="field bg-white/5 border-white/10 focus:border-accent focus:bg-white/5"
+                  className="field"
                   placeholder="ismingiz"
                   value={form.username}
                   onChange={(e) => setForm({ ...form, username: e.target.value })}
@@ -122,9 +125,9 @@ export const Register = () => {
               </div>
 
               <div>
-                <label className="text-[11.5px] text-muted block mb-1.5">Email</label>
+                <label className="text-[11px] text-muted/50 block mb-1.5 font-medium">Email</label>
                 <input
-                  className="field bg-white/5 border-white/10 focus:border-accent focus:bg-white/5"
+                  className="field"
                   type="email"
                   placeholder="email@example.com"
                   value={form.email}
@@ -134,46 +137,52 @@ export const Register = () => {
               </div>
 
               <div>
-                <label className="text-[11.5px] text-muted block mb-1.5">Parol</label>
-                <input
-                  className="field bg-white/5 border-white/10 focus:border-accent focus:bg-white/5"
-                  type="password"
-                  placeholder="Kamida 8 belgi"
-                  value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  required
-                  minLength={8}
-                />
+                <label className="text-[11px] text-muted/50 block mb-1.5 font-medium">Parol</label>
+                <div className="relative">
+                  <input
+                    className="field pr-9"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Kamida 8 belgi"
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    required
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted/30 hover:text-muted/60 transition-colors"
+                  >
+                    <Icon name={showPassword ? 'eye_off' : 'eye'} className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full mt-2 group relative overflow-hidden"
+                className="btn-primary w-full mt-2 py-2.5 text-[13px]"
               >
-                <span className="relative z-10">
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
-                        <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
-                      </svg>
-                      Yuklanmoqda...
-                    </span>
-                  ) : (
-                    "Ro'yxatdan o'tish"
-                  )}
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-accent to-accent-hover opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
+                      <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" className="opacity-75" />
+                    </svg>
+                    Yuklanmoqda...
+                  </span>
+                ) : (
+                  "Ro'yxatdan o'tish"
+                )}
               </button>
             </form>
 
-            <div className="mt-6 pt-4 border-t border-white/5">
-              <p className="text-muted text-[12.5px] text-center">
+            <div className="mt-5 pt-4 border-t border-white/[0.04]">
+              <p className="text-muted/40 text-[12.5px] text-center">
                 Akkaunt bormi?{' '}
                 <Link
                   to="/login"
-                  className="text-accent hover:text-accent-hover font-medium hover:underline transition-colors"
+                  className="text-accent hover:text-accent-light font-medium transition-colors"
                 >
                   Kirish
                 </Link>

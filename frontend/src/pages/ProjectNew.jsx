@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { Avatar } from '../components/Avatar.jsx';
+import { Icon } from '../components/Icon.jsx';
 
 export const ProjectNew = () => {
   const navigate = useNavigate();
@@ -66,19 +67,26 @@ export const ProjectNew = () => {
 
   return (
     <div className="max-w-2xl">
-      <Link to="/projects" className="text-[12.5px] text-muted hover:text-white">&larr; Loyihalar</Link>
-      <h1 className="font-display text-xl font-semibold tracking-tight mt-1 mb-6">Yangi loyiha yaratish</h1>
+      <Link to="/projects" className="text-[12px] text-muted/40 hover:text-white/70 flex items-center gap-1 transition-colors">
+        <Icon name="arrow_left" className="w-3 h-3" />
+        Loyihalar
+      </Link>
+      <h1 className="font-display text-xl font-semibold tracking-tight mt-1 mb-5">Yangi loyiha yaratish</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {error && <p className="text-negative text-[12.5px]">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="bg-negative/8 border border-negative/15 text-negative text-[12px] rounded-lg px-3 py-2">
+            {error}
+          </div>
+        )}
 
-        <div className="card space-y-3">
-          <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted">Umumiy ma'lumot</h2>
+        <div className="card space-y-2.5">
+          <h2 className="section-heading"><h2>Umumiy ma'lumot</h2></h2>
           <input className="field" placeholder="Loyiha nomi *" value={form.name} onChange={set('name')} />
           <textarea className="field" rows={3} placeholder="Tavsif" value={form.description} onChange={set('description')} />
           <input className="field" placeholder="Mijoz / klient (ixtiyoriy)" value={form.client} onChange={set('client')} />
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2.5">
             <select className="field mb-0" value={form.priority} onChange={set('priority')}>
               <option value="LOW">Past prioritet</option>
               <option value="MEDIUM">O'rtacha prioritet</option>
@@ -92,51 +100,51 @@ export const ProjectNew = () => {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2.5">
             <div>
-              <label className="text-[11.5px] text-muted block mb-1">Boshlanish sanasi</label>
+              <label className="text-[10.5px] text-muted/40 block mb-1">Boshlanish sanasi</label>
               <input className="field mb-0" type="date" value={form.startDate} onChange={set('startDate')} />
             </div>
             <div>
-              <label className="text-[11.5px] text-muted block mb-1">Muddat (deadline)</label>
+              <label className="text-[10.5px] text-muted/40 block mb-1">Muddat (deadline)</label>
               <input className="field mb-0" type="date" value={form.deadline} onChange={set('deadline')} />
             </div>
           </div>
         </div>
 
-        <div className="card space-y-3">
-          <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted">Moliya rejasi</h2>
-          <div className="grid grid-cols-3 gap-3">
+        <div className="card space-y-2.5">
+          <h2 className="section-heading"><h2>Moliya rejasi</h2></h2>
+          <div className="grid grid-cols-3 gap-2.5">
             <div>
-              <label className="text-[11.5px] text-muted block mb-1">Byudjet (so'm)</label>
+              <label className="text-[10.5px] text-muted/40 block mb-1">Byudjet (so'm)</label>
               <input className="field mb-0" type="number" placeholder="0" value={form.budget} onChange={set('budget')} />
             </div>
             <div>
-              <label className="text-[11.5px] text-muted block mb-1">Kutilgan daromad</label>
+              <label className="text-[10.5px] text-muted/40 block mb-1">Kutilgan daromad</label>
               <input className="field mb-0" type="number" placeholder="0" value={form.expectedIncome} onChange={set('expectedIncome')} />
             </div>
             <div>
-              <label className="text-[11.5px] text-muted block mb-1">Kutilgan xarajat</label>
+              <label className="text-[10.5px] text-muted/40 block mb-1">Kutilgan xarajat</label>
               <input className="field mb-0" type="number" placeholder="0" value={form.expectedExpense} onChange={set('expectedExpense')} />
             </div>
           </div>
         </div>
 
-        <div className="card space-y-3">
-          <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted">Jamoa</h2>
+        <div className="card space-y-2.5">
+          <h2 className="section-heading"><h2>Jamoa</h2></h2>
           {directory.length === 0 ? (
-            <p className="text-muted text-[12.5px]">Boshqa foydalanuvchi yo'q</p>
+            <p className="text-muted/40 text-[12px]">Boshqa foydalanuvchi yo'q</p>
           ) : (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {directory.map((u) => (
                 <button
                   type="button"
                   key={u.id}
                   onClick={() => toggleMember(u.id)}
-                  className={`flex items-center gap-2 px-2.5 py-1.5 rounded-full border text-[12.5px] transition-colors ${
+                  className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[12px] transition-colors ${
                     selectedMembers.includes(u.id)
-                      ? 'border-accent bg-accent/10 text-white'
-                      : 'border-border text-muted hover:text-white'
+                      ? 'border-accent/40 bg-accent/10 text-white'
+                      : 'border-white/[0.06] text-muted/60 hover:text-white/70 hover:border-white/[0.1]'
                   }`}
                 >
                   <Avatar username={u.username} size={5} />
@@ -148,7 +156,7 @@ export const ProjectNew = () => {
         </div>
 
         <div className="card space-y-2">
-          <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted">Eslatma (ixtiyoriy)</h2>
+          <h2 className="section-heading"><h2>Eslatma (ixtiyoriy)</h2></h2>
           <textarea className="field mb-0" rows={2} placeholder="Boshlang'ich eslatma yoki talablar..." value={form.note} onChange={set('note')} />
         </div>
 

@@ -9,7 +9,7 @@ export const AvatarStack = ({ members = [], max = 4 }) => {
       {shown.map((m, i) => (
         <div
           key={m.userId || i}
-          className="ring-2 ring-surface rounded-full hover:ring-accent/50 hover:z-10 transition-all duration-200 hover:scale-110"
+          className="ring-2 ring-surface rounded-full hover:ring-accent/30 hover:z-10 transition-all duration-150 hover:scale-105"
           title={m.username}
           style={{ zIndex: max - i }}
         >
@@ -17,7 +17,7 @@ export const AvatarStack = ({ members = [], max = 4 }) => {
         </div>
       ))}
       {extra > 0 && (
-        <div className="w-6 h-6 rounded-full bg-raised ring-2 ring-surface flex items-center justify-center text-[9px] text-muted font-medium hover:bg-accent/20 hover:text-accent transition-colors duration-200">
+        <div className="w-6 h-6 rounded-full bg-white/[0.04] ring-2 ring-surface flex items-center justify-center text-[8.5px] text-muted/50 font-medium hover:bg-accent/15 hover:text-accent transition-colors">
           +{extra}
         </div>
       )}
