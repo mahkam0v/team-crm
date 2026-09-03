@@ -1,17 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import { Layout } from './components/Layout.jsx';
-import { Login } from './pages/Login.jsx';
-import { Register } from './pages/Register.jsx';
-import { Dashboard } from './pages/Dashboard.jsx';
-import { Projects } from './pages/Projects.jsx';
-import { ProjectNew } from './pages/ProjectNew.jsx';
-import { ProjectDetail } from './pages/ProjectDetail.jsx';
-import { Tasks } from './pages/Tasks.jsx';
-import { Finance } from './pages/Finance.jsx';
-import { Admin } from './pages/Admin.jsx';
-import { Profile } from './pages/Profile.jsx';
-import { useEffect } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
+
+const Login = lazy(() => import('./pages/Login.jsx'));
+const Register = lazy(() => import('./pages/Register.jsx'));
+const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
+const Projects = lazy(() => import('./pages/Projects.jsx'));
+const ProjectNew = lazy(() => import('./pages/ProjectNew.jsx'));
+const ProjectDetail = lazy(() => import('./pages/ProjectDetail.jsx'));
+const Tasks = lazy(() => import('./pages/Tasks.jsx'));
+const Finance = lazy(() => import('./pages/Finance.jsx'));
+const Admin = lazy(() => import('./pages/Admin.jsx'));
+const Profile = lazy(() => import('./pages/Profile.jsx'));
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -42,18 +43,27 @@ const AdminOnly = ({ children }) => {
 const AppRoutes = () => (
   <>
     <ScrollToTop />
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/" element={<Protected><Dashboard /></Protected>} />
-      <Route path="/projects" element={<Protected><Projects /></Protected>} />
-      <Route path="/projects/new" element={<Protected><ProjectNew /></Protected>} />
-      <Route path="/projects/:id" element={<Protected><ProjectDetail /></Protected>} />
-      <Route path="/tasks" element={<Protected><Tasks /></Protected>} />
-      <Route path="/finance" element={<Protected><Finance /></Protected>} />
-      <Route path="/admin" element={<Protected><AdminOnly><Admin /></AdminOnly></Protected>} />
-      <Route path="/profile" element={<Protected><Profile /></Protected>} />
-    </Routes>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-ink">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
+          <p className="text-muted text-sm">Yuklanmoqda...</p>
+        </div>
+      </div>
+    }>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Protected><Dashboard /></Protected>} />
+        <Route path="/projects" element={<Protected><Projects /></Protected>} />
+        <Route path="/projects/new" element={<Protected><ProjectNew /></Protected>} />
+        <Route path="/projects/:id" element={<Protected><ProjectDetail /></Protected>} />
+        <Route path="/tasks" element={<Protected><Tasks /></Protected>} />
+        <Route path="/finance" element={<Protected><Finance /></Protected>} />
+        <Route path="/admin" element={<Protected><AdminOnly><Admin /></AdminOnly></Protected>} />
+        <Route path="/profile" element={<Protected><Profile /></Protected>} />
+      </Routes>
+    </Suspense>
   </>
 );
 

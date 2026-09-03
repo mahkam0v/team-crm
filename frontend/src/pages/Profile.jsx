@@ -5,7 +5,7 @@ import { Avatar, statusLabel } from '../components/Avatar.jsx';
 import { Skeleton } from '../components/Skeleton.jsx';
 import { Icon } from '../components/Icon.jsx';
 
-export const Profile = () => {
+const Profile = () => {
   const { user, refresh } = useAuth();
   const [form, setForm] = useState({ bio: '', currentlyWorkingOn: '', status: 'AVAILABLE' });
   const [stats, setStats] = useState(null);
@@ -192,3 +192,5 @@ export const Profile = () => {
     </div>
   );
 };
+
+export default Profile;

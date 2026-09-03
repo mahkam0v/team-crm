@@ -52,7 +52,7 @@ const AnimatedNumber = ({ value, duration = 800 }) => {
   return <>{typeof display === 'number' ? display.toLocaleString() : display}</>;
 };
 
-export const Dashboard = () => {
+const Dashboard = () => {
   const navigate = useNavigate();
   const [period, setPeriod] = useState('this_month');
   const [summary, setSummary] = useState(null);
@@ -287,3 +287,5 @@ export const Dashboard = () => {
     </div>
   );
 };
+
+export default Dashboard;

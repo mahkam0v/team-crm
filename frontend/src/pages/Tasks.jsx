@@ -32,7 +32,7 @@ const priorityOptions = [
   { value: 'URGENT', label: 'Shoshilinch' },
 ];
 
-export const Tasks = () => {
+const Tasks = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState('');
@@ -340,3 +340,5 @@ export const Tasks = () => {
     </div>
   );
 };
+
+export default Tasks;

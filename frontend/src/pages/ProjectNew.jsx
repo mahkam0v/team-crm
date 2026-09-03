@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { Avatar } from '../components/Avatar.jsx';
 import { Icon } from '../components/Icon.jsx';
 
-export const ProjectNew = () => {
+const ProjectNew = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [directory, setDirectory] = useState([]);
@@ -170,3 +170,5 @@ export const ProjectNew = () => {
     </div>
   );
 };
+
+export default ProjectNew;

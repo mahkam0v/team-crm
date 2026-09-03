@@ -26,7 +26,7 @@ const tabs = [
   { key: 'activity', label: 'Faoliyat', icon: 'activity' },
 ];
 
-export const ProjectDetail = () => {
+const ProjectDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
@@ -120,3 +120,5 @@ export const ProjectDetail = () => {
     </div>
   );
 };
+
+export default ProjectDetail;

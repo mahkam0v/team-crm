@@ -11,7 +11,7 @@ const roleColors = {
   USER: 'bg-accent/10 text-accent',
 };
 
-export const Admin = () => {
+const Admin = () => {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -118,3 +118,5 @@ export const Admin = () => {
     </div>
   );
 };
+
+export default Admin;

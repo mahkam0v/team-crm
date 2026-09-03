@@ -17,7 +17,7 @@ const typeConfig = {
   EXPENSE: { icon: 'trending_down', color: 'text-negative' },
 };
 
-export const Finance = () => {
+const Finance = () => {
   const [transactions, setTransactions] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -304,3 +304,5 @@ export const Finance = () => {
     </div>
   );
 };
+
+export default Finance;

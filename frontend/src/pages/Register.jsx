@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { Icon } from '../components/Icon.jsx';
 
-export const Register = () => {
+const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: '', email: '', password: '' });
@@ -194,3 +194,5 @@ export const Register = () => {
     </div>
   );
 };
+
+export default Register;

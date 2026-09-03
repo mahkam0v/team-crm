@@ -30,7 +30,7 @@ const statusFilters = [
   { value: 'CANCELLED', label: 'Bekor qilingan', icon: 'x_circle' },
 ];
 
-export const Projects = () => {
+const Projects = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [projects, setProjects] = useState([]);
@@ -184,3 +184,5 @@ export const Projects = () => {
     </div>
   );
 };
+
+export default Projects;

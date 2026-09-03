@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { Icon } from '../components/Icon.jsx';
 
-export const Login = () => {
+const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -191,3 +191,5 @@ export const Login = () => {
     </div>
   );
 };
+
+export default Login;
