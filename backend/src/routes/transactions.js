@@ -83,6 +83,11 @@ transactionsRouter.patch('/:id', async (req, res, next) => {
     const isAdmin = ['ADMIN', 'SUPER_ADMIN'].includes(req.user.role);
     if (!isOwner && !isAdmin) return res.status(404).json({ error: 'Not found' });
 
+    const { status } = req.body;
+    if (status !== undefined && !['RECEIVED_PAID', 'PENDING', 'CANCELLED'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid transaction status' });
+    }
+
     const allowedFields = ['category', 'description', 'status', 'date'];
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) transaction[field] = req.body[field];

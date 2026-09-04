@@ -1,6 +1,11 @@
 {
-  "dependencies": {
-    "glob": "^13.0.6",
-    "multer": "^2.2.0"
+  "private": true,
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }

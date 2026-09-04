@@ -4,6 +4,7 @@ import { api } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { Avatar } from '../components/Avatar.jsx';
 import { Icon } from '../components/Icon.jsx';
+import toast from 'react-hot-toast';
 
 const ProjectNew = () => {
   const navigate = useNavigate();
@@ -39,8 +40,7 @@ const ProjectNew = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    if (!form.name.trim()) return setError('Loyiha nomini kiriting');
+    if (!form.name.trim()) return toast.error('Loyiha nomini kiriting');
     setSubmitting(true);
     try {
       const { project } = await api.createProject({
@@ -57,9 +57,10 @@ const ProjectNew = () => {
         memberIds: selectedMembers,
         note: form.note || undefined,
       });
+      toast.success('Loyiha yaratildi!');
       navigate(`/projects/${project.id}`);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setSubmitting(false);
     }
@@ -86,7 +87,7 @@ const ProjectNew = () => {
           <textarea className="field" rows={3} placeholder="Tavsif" value={form.description} onChange={set('description')} />
           <input className="field" placeholder="Mijoz / klient (ixtiyoriy)" value={form.client} onChange={set('client')} />
 
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <select className="field mb-0" value={form.priority} onChange={set('priority')}>
               <option value="LOW">Past prioritet</option>
               <option value="MEDIUM">O'rtacha prioritet</option>
@@ -100,7 +101,7 @@ const ProjectNew = () => {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div>
               <label className="text-[10.5px] text-muted/40 block mb-1">Boshlanish sanasi</label>
               <input className="field mb-0" type="date" value={form.startDate} onChange={set('startDate')} />
@@ -114,7 +115,7 @@ const ProjectNew = () => {
 
         <div className="card space-y-2.5">
           <h2 className="section-heading"><h2>Moliya rejasi</h2></h2>
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <div>
               <label className="text-[10.5px] text-muted/40 block mb-1">Byudjet (so'm)</label>
               <input className="field mb-0" type="number" placeholder="0" value={form.budget} onChange={set('budget')} />

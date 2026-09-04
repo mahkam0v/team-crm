@@ -82,12 +82,12 @@ const Dashboard = () => {
             {new Date().toLocaleDateString('uz-UZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
-        <div className="segment animate-fade-in stagger-2">
+        <div className="segment animate-fade-in stagger-2 overflow-x-auto max-w-full">
           {periods.map((p) => (
             <button
               key={p.value}
               onClick={() => setPeriod(p.value)}
-              className={`segment-btn ${period === p.value ? 'active' : ''}`}
+              className={`segment-btn whitespace-nowrap ${period === p.value ? 'active' : ''}`}
             >
               {p.label}
             </button>
@@ -152,7 +152,7 @@ const Dashboard = () => {
 
           {/* Financial trend chart */}
           {analytics?.monthlyTrend && (
-            <div className="card animate-fade-in stagger-4 overflow-hidden">
+            <div className="card animate-fade-in stagger-4 overflow-x-auto">
               <div className="flex items-center justify-between mb-4">
                 <div className="section-heading">
                   <h2>Daromad vs Xarajat — so'nggi 6 oy</h2>
@@ -192,7 +192,7 @@ const Dashboard = () => {
           )}
 
           {/* Project performance + task stats */}
-          <div className="grid lg:grid-cols-3 gap-4 animate-fade-in stagger-5">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-in stagger-5">
             {/* Top profitable */}
             <div className="card group">
               <div className="section-heading">

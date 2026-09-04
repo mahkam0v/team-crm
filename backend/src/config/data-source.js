@@ -17,62 +17,51 @@ import { TaskCommentEntity } from '../entities/TaskComment.js';
 import { TagEntity } from '../entities/Tag.js';
 import { UserSettingsEntity } from '../entities/UserSettings.js';
 import { NoteEntity } from '../entities/Note.js';
+import { RefreshTokenEntity } from '../entities/RefreshToken.js';
 
 dotenv.config();
+
+const entities = [
+  UserEntity,
+  ProjectEntity,
+  ProjectMemberEntity,
+  TaskEntity,
+  TransactionEntity,
+  NotificationEntity,
+  ActivityLogEntity,
+  AchievementEntity,
+  UserAchievementEntity,
+  FileEntity,
+  ProjectChatMessageEntity,
+  TaskCommentEntity,
+  TagEntity,
+  UserSettingsEntity,
+  NoteEntity,
+  RefreshTokenEntity,
+];
+
+const baseOptions = {
+  type: 'postgres',
+  synchronize: true,
+  logging: false,
+  entities,
+};
 
 export const AppDataSource = new DataSource(
   process.env.DATABASE_URL
     ? {
-        type: 'postgres',
+        ...baseOptions,
         url: process.env.DATABASE_URL,
-        synchronize: true,
-        logging: false,
         ssl: {
           rejectUnauthorized: false,
         },
-        entities: [
-          UserEntity,
-          ProjectEntity,
-          ProjectMemberEntity,
-          TaskEntity,
-          TransactionEntity,
-          NotificationEntity,
-          ActivityLogEntity,
-          AchievementEntity,
-          UserAchievementEntity,
-          FileEntity,
-          ProjectChatMessageEntity,
-          TaskCommentEntity,
-          TagEntity,
-          UserSettingsEntity,
-          NoteEntity,
-        ],
       }
     : {
-        type: 'postgres',
+        ...baseOptions,
         host: process.env.DB_HOST || 'localhost',
         port: Number(process.env.DB_PORT || 5432),
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_DATABASE,
-        synchronize: true,
-        logging: false,
-        entities: [
-          UserEntity,
-          ProjectEntity,
-          ProjectMemberEntity,
-          TaskEntity,
-          TransactionEntity,
-          NotificationEntity,
-          ActivityLogEntity,
-          AchievementEntity,
-          UserAchievementEntity,
-          FileEntity,
-          ProjectChatMessageEntity,
-          TaskCommentEntity,
-          TagEntity,
-          UserSettingsEntity,
-          NoteEntity,
-        ],
       }
 );

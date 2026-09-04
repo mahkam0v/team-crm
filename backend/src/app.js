@@ -24,8 +24,15 @@ export const createApp = () => {
   const app = express();
 
   app.use(helmet());
-  app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
-  app.use(express.json());
+  // Reflect the request origin when FRONTEND_URL is unset (local dev) so that
+  // `credentials: true` still works in the browser.
+  app.use(
+    cors({
+      origin: process.env.FRONTEND_URL || true,
+      credentials: true,
+    })
+  );
+  app.use(express.json({ limit: '1mb' }));
 
   app.use(
     '/api/auth',

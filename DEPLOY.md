@@ -22,7 +22,10 @@ Railway dashboard'da **Variables** bo'limiga boring va qo'shing:
 
 ```
 FRONTEND_URL=https://your-app.vercel.app
-JWT_SECRET=random-secret-key-123456789
+JWT_SECRET=random-access-secret-123456789
+JWT_REFRESH_SECRET=different-random-refresh-secret-987654321
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=30d
 NODE_ENV=production
 ```
 

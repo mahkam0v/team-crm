@@ -4,6 +4,11 @@ import { requireAuth, requireRole } from '../middleware/auth.js';
 import { getUserRepo, getProjectMemberRepo, getTaskRepo, getUserAchievementRepo, getActivityLogRepo } from '../repositories/index.js';
 import { toPublicUser } from '../services/authService.js';
 
+const USER_STATUSES = ['AVAILABLE', 'BUSY', 'DO_NOT_DISTURB', 'OFFLINE'];
+const VALID_ROLES = ['SUPER_ADMIN', 'ADMIN', 'USER'];
+
+const isInvalidUuid = (id) => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id || ''));
+
 export const usersRouter = Router();
 usersRouter.use(requireAuth);
 
@@ -41,6 +46,15 @@ usersRouter.get('/me/stats', async (req, res, next) => {
 usersRouter.patch('/me', async (req, res, next) => {
   try {
     const { bio, avatar, status, currentlyWorkingOn } = req.body;
+    if (status !== undefined && !USER_STATUSES.includes(status)) {
+      return res.status(400).json({ error: `status must be one of: ${USER_STATUSES.join(', ')}` });
+    }
+    if (bio !== undefined && typeof bio !== 'string') return res.status(400).json({ error: 'bio must be a string' });
+    if (currentlyWorkingOn !== undefined && typeof currentlyWorkingOn !== 'string') {
+      return res.status(400).json({ error: 'currentlyWorkingOn must be a string' });
+    }
+    if (avatar !== undefined && typeof avatar !== 'string') return res.status(400).json({ error: 'avatar must be a string' });
+
     const userRepo = getUserRepo();
     const user = await userRepo.findOne({ where: { id: req.user.id } });
     Object.assign(user, {
@@ -72,6 +86,22 @@ usersRouter.post('/', requireRole('ADMIN', 'SUPER_ADMIN'), async (req, res, next
   try {
     const { username, email, password, role = 'USER' } = req.body;
 
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'username, email and password are required' });
+    }
+    if (typeof username !== 'string' || username.trim().length < 3 || username.length > 32) {
+      return res.status(400).json({ error: 'username must be 3-32 characters' });
+    }
+    if (typeof password !== 'string' || password.length < 8) {
+      return res.status(400).json({ error: 'password must be at least 8 characters' });
+    }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      return res.status(400).json({ error: 'Invalid email' });
+    }
+    if (!VALID_ROLES.includes(role)) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+
     if (role !== 'USER' && req.user.role !== 'SUPER_ADMIN') {
       const err = new Error('Only Super Admin can create admin accounts');
       err.status = 403;
@@ -98,6 +128,7 @@ usersRouter.post('/', requireRole('ADMIN', 'SUPER_ADMIN'), async (req, res, next
 // ADMIN can only target USER accounts
 usersRouter.patch('/:id/disable', requireRole('ADMIN', 'SUPER_ADMIN'), async (req, res, next) => {
   try {
+    if (isInvalidUuid(req.params.id)) return res.status(404).json({ error: 'User not found' });
     const userRepo = getUserRepo();
     const target = await userRepo.findOne({ where: { id: req.params.id } });
     if (!target) return res.status(404).json({ error: 'User not found' });

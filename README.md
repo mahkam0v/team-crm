@@ -55,14 +55,23 @@ npm run dev             # http://localhost:5173
 - `GET /api/users/directory` — barcha userlar uchun yengil ro'yxat (@mention, a'zo tanlash uchun)
 - `DELETE /api/projects/:id`
 
+## Auth: Access + Refresh token tizimi
+
+- Login/register → `{ accessToken, refreshToken, user }` qaytaradi
+- `accessToken` qisqa muddatli (default `15m`, `JWT_ACCESS_EXPIRES_IN`), xotirada saqlanadi
+- `refreshToken` uzoq muddatli (default `30d`, `JWT_REFRESH_EXPIRES_IN`), `localStorage`'da saqlanadi va DB'da **hash holda** saqlanadi — logout'da bekor qilinadi
+- Access token eskirsa frontend avtomatik `POST /api/auth/refresh` bilan yangilaydi (single-flight) va so'rovni qayta yuboradi
+- Har refresh'da token **rotatsiya** qilinadi (eski refresh token bekor bo'ladi); logout `POST /api/auth/logout` server tomonda tokenni o'chiradi
+- Parol almashtirilganda barcha refresh tokenlar bekor qilinadi
+
+> ⚠️ Eski `localStorage.token` (7 kunlik oddiy JWT) bilan tizim o'zgartirildi — eski sessiya endi ishlamaydi, foydalanuvchilar bir marta qayta kirishi kerak.
+
 ## ATAYLAB QOLDIRILGAN QISMLAR (keyingi safar)
 
 Quyidagilarni **soxta/yarim qilib chalkashtirmaslik uchun** ataylab qilmadim — xohlasangiz alohida qilib beraman:
 
-1. **Access + Refresh token tizimi** — hozir oddiy JWT (7 kunlik). To'liq access/refresh + avtomatik yangilash + xavfsiz saqlash alohida katta ish, auth arxitekturasini qayta qurishni talab qiladi.
-2. **Manager roli / murakkab permission matritsasi** — hozir SUPER_ADMIN/ADMIN/USER + project owner/member bor. Yangi "Manager" rolini qo'shish mavjud tizimga ta'sir qiladi, alohida muhokama qilish kerak.
-3. **Clients moduli** — rasmda "Mijozlar" sidebar item bor edi, lekin bu original spec'da yo'q edi va yangi entity/CRUD talab qiladi.
-4. **Global search UI** (backend allaqachon tayyor `/api/search`, faqat frontend qismi yo'q)
-5. **Activity calendar (GitHub-style heatmap)** — backend tayyor (`/api/activity/calendar`), frontend hali yo'q
+1. **Manager roli / murakkab permission matritsasi** — hozir SUPER_ADMIN/ADMIN/USER + project owner/member bor. Yangi "Manager" rolini qo'shish mavjud tizimga ta'sir qiladi, alohida muhokama qilish kerak.
+2. **Clients moduli** — rasmda "Mijozlar" sidebar item bor edi, lekin bu original spec'da yo'q edi va yangi entity/CRUD talab qiladi.
+3. **Activity calendar (GitHub-style heatmap)** — backend tayyor (`/api/activity/calendar`), frontend hali yo'q
 
-Shu 5 tadan qaysi birini keyin qilishimni ayting.
+Qaysi birini keyin qilishimni ayting.

@@ -15,3 +15,4 @@ export const getTaskCommentRepo = () => AppDataSource.getRepository('TaskComment
 export const getTagRepo = () => AppDataSource.getRepository('Tag');
 export const getUserSettingsRepo = () => AppDataSource.getRepository('UserSettings');
 export const getNoteRepo = () => AppDataSource.getRepository('Note');
+export const getRefreshTokenRepo = () => AppDataSource.getRepository('RefreshToken');

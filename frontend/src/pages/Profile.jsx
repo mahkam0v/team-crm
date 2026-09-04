@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { Avatar, statusLabel } from '../components/Avatar.jsx';
 import { Skeleton } from '../components/Skeleton.jsx';
 import { Icon } from '../components/Icon.jsx';
+import toast from 'react-hot-toast';
 
 const Profile = () => {
   const { user, refresh } = useAuth();
@@ -20,12 +21,14 @@ const Profile = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setSaved(false);
     try {
       await api.updateProfile(form);
       await refresh();
       setSaved(true);
-      setTimeout(() => setSaved(false), 2500);
+      setTimeout(() => setSaved(false), 2000);
+      toast.success('Profil saqlandi!');
+    } catch (err) {
+      toast.error(err.message || 'Saqlashda xatolik');
     } finally {
       setSaving(false);
     }

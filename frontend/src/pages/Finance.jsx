@@ -5,6 +5,7 @@ import { PendingActions } from '../components/PendingActions.jsx';
 import { EmptyState } from '../components/EmptyState.jsx';
 import { Skeleton } from '../components/Skeleton.jsx';
 import { Icon } from '../components/Icon.jsx';
+import toast from 'react-hot-toast';
 
 const statusLabels = { PENDING: 'Kutilmoqda', RECEIVED_PAID: 'Bajarildi', CANCELLED: 'Bekor qilindi' };
 const statusStyles = {
@@ -48,21 +49,22 @@ const Finance = () => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    setError('');
     const amount = Number(form.amount);
-    if (!amount || amount <= 0) return setError("Summani to'g'ri kiriting");
+    if (!amount || amount <= 0) return toast.error("Summani to'g'ri kiriting");
     try {
       await api.createTransaction({ ...form, amount, projectId: form.projectId || undefined });
       setForm({ ...form, amount: '', description: '', projectId: '' });
       load();
+      toast.success('Tranzaksiya qo\'shildi!');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
   const handleStatusChange = async (id, status) => {
     setTransactions((ts) => ts.map((t) => (t.id === id ? { ...t, status } : t)));
     await api.updateTransactionStatus(id, status);
+    toast.success(`Tranzaksiya ${statusLabels[status].toLowerCase()}`);
   };
 
   const handleExportCSV = () => {
@@ -163,7 +165,7 @@ const Finance = () => {
             {error}
           </div>
         )}
-        <div className="grid sm:grid-cols-6 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-2">
           <select className="field mb-0" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
             <option value="INCOME">Daromad</option>
             <option value="EXPENSE">Xarajat</option>
@@ -185,7 +187,7 @@ const Finance = () => {
           </select>
 
           <button className="btn-primary">
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center justify-center gap-1.5">
               <Icon name="plus" className="w-3.5 h-3.5" strokeWidth={2.5} />
               Qo'shish
             </span>

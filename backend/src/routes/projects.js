@@ -3,7 +3,7 @@ import { requireAuth } from '../middleware/auth.js';
 import { requireProjectAccess } from '../middleware/projectAccess.js';
 import { getProjectRepo, getProjectMemberRepo, getUserRepo, getTaskRepo, getTransactionRepo, getActivityLogRepo, getNoteRepo } from '../repositories/index.js';
 import { createProject, getProjectOverview, markProjectCompleted, addInitialMembers } from '../services/projectService.js';
-import { createProjectSchema, addMemberSchema, validate } from '../validators/projectValidators.js';
+import { createProjectSchema, updateProjectSchema, addMemberSchema, validate } from '../validators/projectValidators.js';
 import { logActivity } from '../services/activityService.js';
 import { createNotification } from '../services/notificationService.js';
 import { projectChatRouter } from './projectChat.js';
@@ -86,6 +86,15 @@ projectsRouter.get('/', async (req, res, next) => {
 
 projectsRouter.post('/', validate(createProjectSchema), async (req, res, next) => {
   try {
+    if (req.body.memberIds?.length) {
+      const existingCount = await getUserRepo().createQueryBuilder('u')
+        .where('u.id IN (:...ids)', { ids: req.body.memberIds })
+        .getCount();
+      if (existingCount !== req.body.memberIds.length) {
+        return res.status(400).json({ error: 'Some selected members do not exist' });
+      }
+    }
+
     const project = await createProject(req.user.id, req.body);
 
     if (req.body.memberIds?.length) {
@@ -122,7 +131,7 @@ projectsRouter.get('/:id', requireProjectAccess, async (req, res, next) => {
   }
 });
 
-projectsRouter.patch('/:id', requireProjectAccess, async (req, res, next) => {
+projectsRouter.patch('/:id', requireProjectAccess, validate(updateProjectSchema), async (req, res, next) => {
   try {
     const projectRepo = getProjectRepo();
     const allowedFields = ['name', 'description', 'client', 'status', 'priority', 'startDate', 'deadline', 'expectedIncome', 'expectedExpense', 'budget'];

@@ -1,22 +1,95 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 
-const getToken = () => localStorage.getItem('token');
-export const setToken = (token) => localStorage.setItem('token', token);
-export const clearToken = () => localStorage.removeItem('token');
+const REFRESH_TOKEN_KEY = 'refreshToken';
 
-const request = async (method, path, body, isForm = false) => {
+// Access token lives in memory only; the refresh token (long-lived) is stored
+// in localStorage so the session survives reloads and can be revoked server-side.
+let accessToken = null;
+let refreshPromise = null;
+
+export const getRefreshToken = () => localStorage.getItem(REFRESH_TOKEN_KEY);
+export const getAccessToken = () => accessToken;
+
+export const setTokens = ({ accessToken: at, refreshToken: rt }) => {
+  if (at) accessToken = at;
+  if (rt) localStorage.setItem(REFRESH_TOKEN_KEY, rt);
+};
+
+export const clearTokens = () => {
+  accessToken = null;
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
+};
+
+const notifyAuthExpired = () => {
+  window.dispatchEvent(new Event('auth:expired'));
+};
+
+// Single-flight refresh: several requests may 401 at once, but we only call
+// /auth/refresh once and queue them behind the same promise.
+const refreshAccessToken = async () => {
+  const rt = getRefreshToken();
+  if (!rt) {
+    clearTokens();
+    notifyAuthExpired();
+    throw new Error('Sessiya tugadi');
+  }
+  if (!refreshPromise) {
+    refreshPromise = (async () => {
+      let res;
+      try {
+        res = await fetch(`${BASE_URL}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken: rt }),
+        });
+      } catch {
+        throw new Error('Serverga ulanib bo‘lmadi');
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        clearTokens();
+        notifyAuthExpired();
+        throw new Error(data.error || 'Sessiya tugadi');
+      }
+      setTokens(data); // new access token + rotated refresh token
+      return data;
+    })().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+};
+
+// These endpoints must never trigger the refresh flow themselves.
+const NO_REFRESH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh'];
+
+const request = async (method, path, body, isForm = false, retried = false) => {
   const headers = {};
-  const token = getToken();
-  if (token) headers.Authorization = `Bearer ${token}`;
+  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
   if (!isForm) headers['Content-Type'] = 'application/json';
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: isForm ? body : body ? JSON.stringify(body) : undefined,
-  });
+  let res;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      method,
+      headers,
+      body: isForm ? body : body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new Error('Serverga ulanib bo‘lmadi');
+  }
 
   const data = await res.json().catch(() => ({}));
+
+  if (res.status === 401 && !retried && !NO_REFRESH_PATHS.includes(path)) {
+    try {
+      await refreshAccessToken();
+    } catch (err) {
+      throw err instanceof Error ? err : new Error('Sessiya tugadi');
+    }
+    return request(method, path, body, isForm, true);
+  }
+
   if (!res.ok) throw new Error(data.error || 'Xatolik yuz berdi');
   return data;
 };
@@ -25,6 +98,7 @@ export const api = {
   register: (body) => request('POST', '/auth/register', body),
   login: (body) => request('POST', '/auth/login', body),
   me: () => request('GET', '/auth/me'),
+  logout: () => request('POST', '/auth/logout', { refreshToken: getRefreshToken() }),
   changePassword: (body) => request('POST', '/auth/change-password', body),
 
   listUsers: () => request('GET', '/users'),
@@ -73,10 +147,17 @@ export const api = {
     return request('POST', '/files', form, true);
   },
   downloadFile: async (id, filename) => {
-    const res = await fetch(`${BASE_URL}/files/${id}/download`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    });
-    if (!res.ok) throw new Error('Yuklab olib bo\'lmadi');
+    const tryDownload = async () =>
+      fetch(`${BASE_URL}/files/${id}/download`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+    let res = await tryDownload();
+    if (res.status === 401) {
+      await refreshAccessToken().catch(() => {});
+      res = await tryDownload();
+    }
+    if (!res.ok) throw new Error("Yuklab olib bo'lmadi");
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -95,5 +176,18 @@ export const api = {
   activityCalendar: (year) => request('GET', `/activity/calendar${year ? `?year=${year}` : ''}`),
   myAchievements: () => request('GET', '/achievements/me'),
   allAchievements: () => request('GET', '/achievements'),
-  search: (q) => request('GET', `/search?q=${encodeURIComponent(q)}`),
+  search: async (q) => {
+    const data = await request('GET', `/search?q=${encodeURIComponent(q)}`);
+    const results = [
+      ...(data.projects || []).map((p) => ({ type: 'project', id: p.id, name: p.name })),
+      ...(data.tasks || []).map((t) => ({ type: 'task', id: t.id, name: t.title })),
+      ...(data.users || []).map((u) => ({ type: 'user', id: u.id, name: u.username })),
+      ...(data.transactions || []).map((t) => ({
+        type: 'transaction',
+        id: t.id,
+        name: t.description || t.category || 'Tranzaksiya',
+      })),
+    ];
+    return { results };
+  },
 };

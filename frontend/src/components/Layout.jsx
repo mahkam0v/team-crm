@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../api.js';
@@ -16,6 +16,7 @@ const navItems = [
 export const Layout = ({ children }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [notifications, setNotifications] = useState([]);
   const [showNotif, setShowNotif] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -206,7 +207,7 @@ export const Layout = ({ children }) => {
           </button>
 
           {/* Search */}
-          <div className="relative flex-1 max-w-md" ref={searchRef}>
+          <div className="relative flex-1 min-w-0 max-w-md" ref={searchRef}>
             <Icon name="search" className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted/40" />
             <input
               className="field mb-0 pl-8 pr-16 py-1.5 text-[12.5px] bg-white/[0.02] border-white/[0.04] focus:bg-white/[0.05] focus:border-accent/25"
@@ -217,7 +218,7 @@ export const Layout = ({ children }) => {
             />
             <button
               onClick={() => setCmdOpen(true)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[10px] text-muted/30 bg-white/[0.03] border border-white/[0.05] rounded px-1.5 py-0.5 hover:bg-white/[0.06] transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 text-[10px] text-muted/30 bg-white/[0.03] border border-white/[0.05] rounded px-1.5 py-0.5 hover:bg-white/[0.06] transition-colors"
             >
               <kbd className="font-mono">⌘K</kbd>
             </button>
@@ -229,6 +230,7 @@ export const Layout = ({ children }) => {
                     onClick={() => {
                       if (r.type === 'project') navigate(`/projects/${r.id}`);
                       else if (r.type === 'task') navigate('/tasks');
+                      else if (r.type === 'transaction') navigate('/finance');
                       else if (r.type === 'user') navigate('/profile');
                       setShowSearch(false);
                       setSearchQuery('');
@@ -236,7 +238,7 @@ export const Layout = ({ children }) => {
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-white/[0.04] transition-colors border-b border-white/[0.03] last:border-0"
                   >
                     <Icon
-                      name={r.type === 'project' ? 'folder' : r.type === 'task' ? 'clipboard' : 'user'}
+                      name={r.type === 'project' ? 'folder' : r.type === 'transaction' ? 'receipt' : r.type === 'user' ? 'user' : 'clipboard'}
                       className="w-3.5 h-3.5 text-muted/50 shrink-0"
                     />
                     <div className="min-w-0">
@@ -262,7 +264,7 @@ export const Layout = ({ children }) => {
               </button>
 
               {showNotif && (
-                <div className="absolute top-full right-0 mt-2 w-80 glass border border-white/[0.08] rounded-xl shadow-elevated z-50 max-h-96 overflow-y-auto animate-fade-in-scale">
+                <div className="absolute top-full right-0 mt-2 w-80 max-w-[calc(100vw-5rem)] glass border border-white/[0.08] rounded-xl shadow-elevated z-50 max-h-96 overflow-y-auto animate-fade-in-scale">
                   <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.04]">
                     <span className="text-[12.5px] font-semibold">Bildirishnomalar</span>
                     <button onClick={handleMarkAllRead} className="text-[11px] text-accent hover:text-accent-light transition-colors">
@@ -292,7 +294,7 @@ export const Layout = ({ children }) => {
 
         {/* Page content */}
         <main className="flex-1 p-4 lg:p-6 overflow-y-auto">
-          <div className="animate-fade-in max-w-[1400px] mx-auto" key={location.pathname}>
+          <div className="animate-fade-in max-w-[1400px] mx-auto" key={pathname}>
             {children}
           </div>
         </main>

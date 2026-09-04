@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { Avatar } from '../components/Avatar.jsx';
 import { Skeleton } from '../components/Skeleton.jsx';
 import { Icon } from '../components/Icon.jsx';
+import toast from 'react-hot-toast';
 
 const roleColors = {
   SUPER_ADMIN: 'bg-negative/10 text-negative',
@@ -23,19 +24,25 @@ const Admin = () => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    setError('');
     try {
       await api.createUser(form);
       setForm({ username: '', email: '', password: '', role: 'USER' });
       load();
+      toast.success('Foydalanuvchi yaratildi!');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
-  const handleDisable = async (id) => {
-    await api.disableUser(id);
-    load();
+  const handleDisable = async (user) => {
+    if (!window.confirm(`"${user.username}" foydalanuvchisini bloklashni tasdiqlaysizmi?`)) return;
+    try {
+      await api.disableUser(user.id);
+      load();
+      toast.success('Foydalanuvchi bloklandi');
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   return (
@@ -55,7 +62,7 @@ const Admin = () => {
             {error}
           </div>
         )}
-        <div className="grid sm:grid-cols-5 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-2">
           <input className="field mb-0" placeholder="Username" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
           <input className="field mb-0" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
           <input className="field mb-0" type="password" placeholder="Parol" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
@@ -102,7 +109,7 @@ const Admin = () => {
                   </span>
                   {u.id !== currentUser.id && (
                     <button
-                      onClick={() => handleDisable(u.id)}
+                      onClick={() => handleDisable(u)}
                       className="text-[11px] text-negative/50 hover:text-negative transition-colors flex items-center gap-1"
                     >
                       <Icon name="user_x" className="w-3 h-3" />

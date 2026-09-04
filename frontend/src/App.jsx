@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import { Layout } from './components/Layout.jsx';
 import { Suspense, lazy, useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
 
 const Login = lazy(() => import('./pages/Login.jsx'));
 const Register = lazy(() => import('./pages/Register.jsx'));
@@ -71,6 +72,26 @@ export const App = () => (
   <BrowserRouter>
     <AuthProvider>
       <AppRoutes />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: 'rgba(15, 17, 23, 0.95)',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '12px',
+            fontSize: '13px',
+            backdropFilter: 'blur(12px)',
+          },
+          success: {
+            iconTheme: { primary: '#22c55e', secondary: '#fff' },
+          },
+          error: {
+            iconTheme: { primary: '#ef4444', secondary: '#fff' },
+          },
+        }}
+      />
     </AuthProvider>
   </BrowserRouter>
 );

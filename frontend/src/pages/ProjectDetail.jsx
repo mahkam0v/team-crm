@@ -13,6 +13,7 @@ import { MembersTab } from '../components/project/MembersTab.jsx';
 import { ActivityTab } from '../components/project/ActivityTab.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { Icon } from '../components/Icon.jsx';
+import toast from 'react-hot-toast';
 
 const tabs = [
   { key: 'overview', label: 'Overview', icon: 'eye' },
@@ -53,8 +54,13 @@ const ProjectDetail = () => {
 
   const handleDelete = async () => {
     if (!window.confirm(`"${project.name}" loyihasini butunlay o'chirmoqchimisiz? Bu amalni ortga qaytarib bo'lmaydi.`)) return;
-    await api.deleteProject(id);
-    navigate('/projects');
+    try {
+      await api.deleteProject(id);
+      toast.success('Loyiha o\'chirildi');
+      navigate('/projects');
+    } catch (err) {
+      toast.error(err.message || 'O\'chirishda xatolik');
+    }
   };
 
   if (loading) return <p className="text-muted/50 text-[13px]">Yuklanmoqda...</p>;
@@ -70,9 +76,9 @@ const ProjectDetail = () => {
           Loyihalar
         </Link>
       </div>
-      <div className="flex items-center justify-between mb-1">
-        <h1 className="font-display text-xl font-semibold tracking-tight">{project.name}</h1>
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+        <h1 className="font-display text-xl font-semibold tracking-tight min-w-0 break-words">{project.name}</h1>
+        <div className="flex items-center gap-2 shrink-0">
           <StatusBadge status={project.status} />
           {canManage && (
             <button onClick={handleDelete} className="btn-danger text-[11px] py-1 px-2 flex items-center gap-1">
@@ -82,7 +88,7 @@ const ProjectDetail = () => {
           )}
         </div>
       </div>
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         <PriorityBadge priority={project.priority} />
         {project.client && <span className="text-[11.5px] text-muted/40">Mijoz: {project.client}</span>}
       </div>

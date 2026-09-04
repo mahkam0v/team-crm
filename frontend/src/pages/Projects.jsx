@@ -131,8 +131,8 @@ const Projects = () => {
         />
       ) : view === 'table' ? (
         /* Table View */
-        <div className="card p-0 overflow-hidden animate-fade-in stagger-3">
-          <table className="w-full text-[12.5px]">
+        <div className="card p-0 overflow-x-auto animate-fade-in stagger-3">
+          <table className="w-full text-[12.5px] min-w-[640px]">
             <thead>
               <tr className="text-left text-[10px] uppercase tracking-wider text-muted/40 border-b border-white/[0.04]">
                 <th className="px-4 py-2.5 font-medium">Loyiha nomi</th>

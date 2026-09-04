@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api } from '../api.js';
 import { Skeleton } from '../components/Skeleton.jsx';
 import { Icon } from '../components/Icon.jsx';
+import toast from 'react-hot-toast';
 
 const statuses = ['TODO', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
 const statusLabels = { TODO: 'Todo', IN_PROGRESS: 'Jarayonda', COMPLETED: 'Bajarildi', CANCELLED: 'Bekor qilindi' };
@@ -48,27 +49,38 @@ const Tasks = () => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    setError('');
-    if (!title.trim()) return;
+    if (!title.trim()) return toast.error('Vazifa nomini kiriting');
     try {
       await api.createTask({ title, priority });
       setTitle('');
       setPriority('MEDIUM');
       load();
+      toast.success('Vazifa yaratildi!');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     }
   };
 
   const handleStatusChange = async (id, status) => {
+    const prev = tasks.find((t) => t.id === id)?.status;
     setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, status } : t)));
-    await api.updateTask(id, { status });
+    try {
+      await api.updateTask(id, { status });
+      toast.success(`Status o'zgartirildi: ${statusLabels[status]}`);
+    } catch (err) {
+      setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, status: prev } : t)));
+      toast.error(err.message);
+    }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Vazifani o\'chirmoqchimisiz?')) return;
-    setTasks((ts) => ts.filter((t) => t.id !== id));
-    await api.deleteTask(id);
+    try {
+      await api.deleteTask(id);
+      setTasks((ts) => ts.filter((t) => t.id !== id));
+      toast.success('Vazifa o\'chirildi');
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   const handleDragStart = (e, taskId) => {
@@ -163,10 +175,10 @@ const Tasks = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex gap-0.5 bg-white/[0.03] border border-white/[0.05] rounded-lg p-0.5">
+        <div className="flex gap-0.5 bg-white/[0.03] border border-white/[0.05] rounded-lg p-0.5 overflow-x-auto max-w-full">
           <button
             onClick={() => setFilterPriority('')}
-            className={`segment-btn text-[11px] ${!filterPriority ? 'active' : ''}`}
+            className={`segment-btn text-[11px] whitespace-nowrap ${!filterPriority ? 'active' : ''}`}
           >
             Hammasi
           </button>
@@ -174,7 +186,7 @@ const Tasks = () => {
             <button
               key={key}
               onClick={() => setFilterPriority(key === filterPriority ? '' : key)}
-              className={`segment-btn text-[11px] flex items-center gap-1 ${filterPriority === key ? 'active' : ''}`}
+              className={`segment-btn text-[11px] flex items-center gap-1 whitespace-nowrap ${filterPriority === key ? 'active' : ''}`}
             >
               <Icon name={cfg.icon} className="w-2.5 h-2.5" strokeWidth={2.5} />
               {cfg.label}
