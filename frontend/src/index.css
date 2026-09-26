@@ -3,6 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  /* Native form controls (select dropdown, date picker, scrollbars)
+     follow the dark theme — otherwise dropdown options render
+     white-on-white on Windows browsers */
+  :root { color-scheme: dark; }
+  select option {
+    background-color: theme('colors.raised');
+    color: #fff;
+  }
   ::selection { background: theme('colors.accent.DEFAULT'); color: white; }
   html { scroll-behavior: smooth; }
   body {
@@ -23,7 +31,7 @@
     @apply text-sm font-semibold bg-accent hover:bg-accent-hover text-white rounded-lg px-4 py-2.5 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed relative overflow-hidden;
   }
   .btn-primary:hover {
-    box-shadow: 0 2px 16px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 16px rgba(249, 115, 22, 0.3);
     transform: translateY(-1px);
   }
   .btn-primary:active {
@@ -63,7 +71,7 @@
   }
   .segment-btn.active {
     @apply bg-accent text-white;
-    box-shadow: 0 1px 8px rgba(99, 102, 241, 0.25);
+    box-shadow: 0 1px 8px rgba(249, 115, 22, 0.25);
   }
 
   /* Section heading */
@@ -101,8 +109,8 @@
   100% { background-position: 200% 0; }
 }
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-  50% { box-shadow: 0 0 20px 4px rgba(99, 102, 241, 0.1); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(249, 115, 22, 0.1); }
 }
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
@@ -135,7 +143,7 @@
 
 /* ── Skeleton loading ── */
 .skeleton {
-  background: linear-gradient(90deg, #161923 25%, #1e2233 50%, #161923 75%);
+  background: linear-gradient(90deg, #1d1b19 25%, #25221f 50%, #1d1b19 75%);
   background-size: 200% 100%;
   animation: shimmer 1.8s ease-in-out infinite;
   border-radius: 6px;
@@ -143,19 +151,19 @@
 
 /* ── Glass ── */
 .glass {
-  background: rgba(15, 17, 23, 0.85);
+  background: rgba(21, 20, 18, 0.85);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 .glass-light {
-  background: rgba(15, 17, 23, 0.6);
+  background: rgba(21, 20, 18, 0.6);
   backdrop-filter: blur(12px) saturate(160%);
   -webkit-backdrop-filter: blur(12px) saturate(160%);
 }
 
 /* ── Gradient text ── */
 .gradient-text {
-  background: linear-gradient(135deg, #6366f1 0%, #818cf8 40%, #06b6d4 100%);
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 45%, #fbbf24 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -181,7 +189,7 @@
 
 /* ── Focus ring ── */
 *:focus-visible {
-  outline: 2px solid rgba(99, 102, 241, 0.4);
+  outline: 2px solid rgba(249, 115, 22, 0.45);
   outline-offset: 2px;
 }
 

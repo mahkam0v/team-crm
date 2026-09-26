@@ -97,7 +97,7 @@ export const Layout = ({ children }) => {
           ${sidebarOpen ? 'w-[232px]' : 'w-[60px]'}
         `}
         style={{
-          background: 'linear-gradient(180deg, rgba(15,17,23,0.99) 0%, rgba(8,9,13,1) 100%)',
+          background: 'linear-gradient(180deg, rgba(21,20,18,0.99) 0%, rgba(13,12,11,1) 100%)',
         }}
       >
         {/* Logo */}
@@ -141,15 +141,20 @@ export const Layout = ({ children }) => {
               end={item.end}
               onClick={closeMobile}
               className={({ isActive }) =>
-                `group flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ${
+                `relative flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ${
                   isActive
-                    ? 'bg-accent/10 text-white'
+                    ? 'bg-white/[0.05] text-white'
                     : 'text-muted hover:text-white/80 hover:bg-white/[0.03]'
                 }`
               }
             >
-              <Icon name={item.icon} className="w-4 h-4 shrink-0" />
-              {sidebarOpen && <span>{item.label}</span>}
+              {({ isActive }) => (
+                <>
+                  {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-accent" />}
+                  <Icon name={item.icon} className={`w-4 h-4 shrink-0 ${isActive ? 'text-accent' : ''}`} />
+                  {sidebarOpen && <span>{item.label}</span>}
+                </>
+              )}
             </NavLink>
           ))}
           {isAdmin && (
@@ -157,15 +162,20 @@ export const Layout = ({ children }) => {
               to="/admin"
               onClick={closeMobile}
               className={({ isActive }) =>
-                `group flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ${
+                `relative flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 ${
                   isActive
-                    ? 'bg-accent/10 text-white'
+                    ? 'bg-white/[0.05] text-white'
                     : 'text-muted hover:text-white/80 hover:bg-white/[0.03]'
                 }`
               }
             >
-              <Icon name="admin" className="w-4 h-4 shrink-0" />
-              {sidebarOpen && <span>Admin</span>}
+              {({ isActive }) => (
+                <>
+                  {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-accent" />}
+                  <Icon name="admin" className={`w-4 h-4 shrink-0 ${isActive ? 'text-accent' : ''}`} />
+                  {sidebarOpen && <span>Admin</span>}
+                </>
+              )}
             </NavLink>
           )}
         </nav>

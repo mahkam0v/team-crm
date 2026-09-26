@@ -28,29 +28,16 @@ const Register = () => {
   return (
     <div className="min-h-screen flex relative overflow-hidden bg-ink">
       {/* Left side — branding */}
-      <div className="hidden lg:flex lg:w-[55%] relative items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-1" />
-
-        <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-positive/6 rounded-full blur-[100px] animate-float" />
-        <div className="absolute bottom-1/3 right-1/3 w-56 h-56 bg-accent/6 rounded-full blur-[100px] animate-float" style={{ animationDelay: '1.5s' }} />
-
-        <div
-          className="absolute inset-0 opacity-[0.025]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(34,197,94,0.4) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(34,197,94,0.4) 1px, transparent 1px)
-            `,
-            backgroundSize: '48px 48px',
-          }}
-        />
+      <div className="hidden lg:flex lg:w-[55%] relative items-center justify-center overflow-hidden border-r border-white/[0.04]">
+        {/* Subtle warm tint */}
+        <div className="absolute inset-0 bg-gradient-to-br from-positive/[0.07] via-transparent to-warning/[0.04]" />
 
         <div className="relative z-10 text-center px-16 animate-fade-in">
-          <div className="w-20 h-20 rounded-2xl bg-positive flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-positive/15 animate-pulse-glow">
-            <Icon name="users" className="w-10 h-10 text-white" strokeWidth={1.5} />
+          <div className="w-16 h-16 rounded-2xl bg-positive flex items-center justify-center mx-auto mb-8 shadow-lg shadow-positive/20">
+            <Icon name="users" className="w-8 h-8 text-white" strokeWidth={1.8} />
           </div>
 
-          <h1 className="font-display text-5xl font-bold mb-4 tracking-tight">
+          <h1 className="font-display text-4xl font-bold mb-4 tracking-tight">
             <span className="text-white">Jamoa</span>
             <span className="text-positive"> ga qo'shiling</span>
           </h1>
@@ -59,22 +46,19 @@ const Register = () => {
             Bepul ro'yxatdan o'ting va jamoangiz bilan birga loyihalarni boshqaring.
           </p>
 
-          <div className="flex items-center justify-center gap-6 mt-10">
+          <div className="flex items-center justify-center gap-8 mt-10">
             {[
               { icon: 'zap', label: 'Tez boshlash', desc: '1 daqiqada tayyor' },
               { icon: 'shield', label: 'Xavfsiz', desc: "Ma'lumotlar himoyalangan" },
               { icon: 'lock', label: 'Bepul', desc: 'Kredit kartasi talab qilinmaydi' },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className={`flex flex-col items-center gap-2.5 animate-fade-in stagger-${i + 2}`}
-              >
-                <div className="w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.05] flex items-center justify-center hover:bg-white/[0.06] hover:border-white/[0.1] transition-all duration-200">
-                  <Icon name={item.icon} className="w-5 h-5 text-white/30" />
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-2.5 text-left">
+                <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0">
+                  <Icon name={item.icon} className="w-4 h-4 text-positive" strokeWidth={1.8} />
                 </div>
                 <div>
-                  <div className="text-[11.5px] font-medium text-white/70">{item.label}</div>
-                  <div className="text-[10px] text-muted/35">{item.desc}</div>
+                  <div className="text-[12px] font-medium text-white/80">{item.label}</div>
+                  <div className="text-[10.5px] text-muted/50">{item.desc}</div>
                 </div>
               </div>
             ))}
@@ -85,8 +69,6 @@ const Register = () => {
       {/* Right side — form */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12 relative">
         <div className="absolute inset-0 bg-ink" />
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-positive/4 rounded-full blur-[100px]" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-accent/4 rounded-full blur-[80px]" />
 
         <div className="w-full max-w-[380px] relative z-10 animate-fade-in-scale">
           <div className="lg:hidden text-center mb-8">
@@ -94,8 +76,8 @@ const Register = () => {
               <Icon name="users" className="w-7 h-7 text-white" strokeWidth={1.5} />
             </div>
             <h1 className="font-display text-2xl font-bold">
-              <span className="gradient-text">Team</span>
-              <span className="text-white">CRM</span>
+              <span className="text-white">Team</span>
+              <span className="text-accent">CRM</span>
             </h1>
           </div>
 

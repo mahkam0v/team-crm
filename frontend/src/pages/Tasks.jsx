@@ -121,8 +121,9 @@ const Tasks = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
         <div>
-          <h1 className="font-display text-[24px] font-bold tracking-tight animate-fade-in">
-            <span className="gradient-text">Vazifalar</span>
+          <h1 className="font-display text-[24px] font-bold tracking-tight animate-fade-in flex items-center gap-2.5">
+            <span className="w-1 h-5 rounded-full bg-accent shrink-0" aria-hidden />
+            Vazifalar
           </h1>
           <p className="text-muted/60 text-[12.5px] mt-0.5 animate-fade-in stagger-1">
             {tasks.length} ta vazifa · {completionRate}% bajarildi
@@ -277,7 +278,7 @@ const Tasks = () => {
                             <select
                               value={t.status}
                               onChange={(e) => handleStatusChange(t.id, e.target.value)}
-                              className="w-full text-[10.5px] bg-white/[0.03] border border-white/[0.04] text-muted/60 rounded-md px-2 py-1 focus:outline-none focus:border-accent/30 transition-colors"
+                              className="w-full text-[10.5px] bg-white/[0.03] border border-white/[0.04] text-muted rounded-md px-2 py-1 focus:outline-none focus:border-accent/30 transition-colors"
                             >
                               {statuses.map((s) => (
                                 <option key={s} value={s}>{statusLabels[s]}</option>

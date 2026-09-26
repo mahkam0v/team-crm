@@ -48,8 +48,9 @@ const Admin = () => {
   return (
     <div>
       <div className="mb-5 animate-fade-in">
-        <h1 className="font-display text-[24px] font-bold tracking-tight">
-          <span className="gradient-text">Admin</span>
+        <h1 className="font-display text-[24px] font-bold tracking-tight flex items-center gap-2.5">
+          <span className="w-1 h-5 rounded-full bg-accent shrink-0" aria-hidden />
+          Admin
         </h1>
         <p className="text-muted/60 text-[12.5px] mt-0.5">{users.length} ta foydalanuvchi</p>
       </div>

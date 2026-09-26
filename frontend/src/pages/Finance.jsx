@@ -108,8 +108,9 @@ const Finance = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
         <div>
-          <h1 className="font-display text-[24px] font-bold tracking-tight animate-fade-in">
-            <span className="gradient-text">Moliya</span>
+          <h1 className="font-display text-[24px] font-bold tracking-tight animate-fade-in flex items-center gap-2.5">
+            <span className="w-1 h-5 rounded-full bg-accent shrink-0" aria-hidden />
+            Moliya
           </h1>
           <p className="text-muted/60 text-[12.5px] mt-0.5 animate-fade-in stagger-1">
             {transactions.length} ta tranzaksiya
@@ -127,30 +128,36 @@ const Finance = () => {
       {/* Summary cards */}
       {!loading && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5 animate-fade-in stagger-1">
-          <div className="card border-l-[3px] border-l-positive hover:border-white/[0.08] transition-all duration-200">
-            <div className="flex items-center gap-2 mb-1">
-              <Icon name="trending_up" className="w-3.5 h-3.5 text-positive/60" />
+          <div className="card">
+            <div className="flex items-center justify-between gap-2">
               <span className="text-[10.5px] uppercase tracking-wider text-muted/50 font-medium">Jami daromad</span>
+              <span className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-positive/10 text-positive">
+                <Icon name="trending_up" className="w-3.5 h-3.5" strokeWidth={2} />
+              </span>
             </div>
-            <div className="num text-[22px] mt-1 text-positive font-bold">
+            <div className="num text-[22px] mt-2 text-positive font-bold">
               +{totalIncome.toLocaleString()} <span className="text-[12px] text-muted/40 font-normal">so'm</span>
             </div>
           </div>
-          <div className="card border-l-[3px] border-l-negative hover:border-white/[0.08] transition-all duration-200">
-            <div className="flex items-center gap-2 mb-1">
-              <Icon name="trending_down" className="w-3.5 h-3.5 text-negative/60" />
+          <div className="card">
+            <div className="flex items-center justify-between gap-2">
               <span className="text-[10.5px] uppercase tracking-wider text-muted/50 font-medium">Jami xarajat</span>
+              <span className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-negative/10 text-negative">
+                <Icon name="trending_down" className="w-3.5 h-3.5" strokeWidth={2} />
+              </span>
             </div>
-            <div className="num text-[22px] mt-1 text-negative font-bold">
+            <div className="num text-[22px] mt-2 text-negative font-bold">
               -{totalExpense.toLocaleString()} <span className="text-[12px] text-muted/40 font-normal">so'm</span>
             </div>
           </div>
-          <div className={`card border-l-[3px] ${balance >= 0 ? 'border-l-positive' : 'border-l-negative'} hover:border-white/[0.08] transition-all duration-200`}>
-            <div className="flex items-center gap-2 mb-1">
-              <Icon name="wallet" className="w-3.5 h-3.5 text-muted/40" />
+          <div className="card">
+            <div className="flex items-center justify-between gap-2">
               <span className="text-[10.5px] uppercase tracking-wider text-muted/50 font-medium">Balans</span>
+              <span className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${balance >= 0 ? 'bg-positive/10 text-positive' : 'bg-negative/10 text-negative'}`}>
+                <Icon name="wallet" className="w-3.5 h-3.5" strokeWidth={2} />
+              </span>
             </div>
-            <div className={`num text-[22px] mt-1 font-bold ${balance >= 0 ? 'text-positive' : 'text-negative'}`}>
+            <div className={`num text-[22px] mt-2 font-bold ${balance >= 0 ? 'text-positive' : 'text-negative'}`}>
               {balance >= 0 ? '+' : ''}{balance.toLocaleString()} <span className="text-[12px] text-muted/40 font-normal">so'm</span>
             </div>
           </div>

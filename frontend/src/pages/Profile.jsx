@@ -41,8 +41,9 @@ const Profile = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
         <div>
-          <h1 className="font-display text-[24px] font-bold tracking-tight animate-fade-in">
-            <span className="gradient-text">Profil</span>
+          <h1 className="font-display text-[24px] font-bold tracking-tight animate-fade-in flex items-center gap-2.5">
+            <span className="w-1 h-5 rounded-full bg-accent shrink-0" aria-hidden />
+            Profil
           </h1>
           <p className="text-muted/60 text-[12.5px] mt-0.5 animate-fade-in stagger-1">Shaxsiy ma'lumotlaringizni yangilang</p>
         </div>

@@ -5,26 +5,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Refined dark base with blue undertones
-        ink: '#08090d',
-        surface: '#0f1117',
-        raised: '#161923',
-        border: '#1e2233',
-        muted: '#5c6078',
+        // Warm graphite base — neutral, professional
+        ink: '#0d0c0b',
+        surface: '#151412',
+        raised: '#1d1b19',
+        border: '#282522',
+        muted: '#6f6a61',
 
-        // Primary — sophisticated indigo (not generic purple)
+        // Primary — warm coral (distinct from generic AI indigo)
         accent: {
-          DEFAULT: '#6366f1',
-          light: '#818cf8',
-          dim: '#4f46e5',
-          hover: '#5b5de6',
-          glow: 'rgba(99, 102, 241, 0.15)',
+          DEFAULT: '#f97316',
+          light: '#fb923c',
+          dim: '#c2410c',
+          hover: '#ea580c',
+          glow: 'rgba(249, 115, 22, 0.15)',
         },
 
         // Semantic
         positive: '#22c55e',
         negative: '#ef4444',
-        warning: '#f59e0b',
+        // Amber-yellow so it stays distinct from the coral accent
+        warning: '#eab308',
         info: '#3b82f6',
         teal: '#14b8a6',
         rose: '#f43f5e',
@@ -79,8 +80,8 @@ export default {
           '50%': { transform: 'translateY(-6px)' },
         },
         pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 0 0 rgba(99, 102, 241, 0)' },
-          '50%': { boxShadow: '0 0 20px 4px rgba(99, 102, 241, 0.1)' },
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(249, 115, 22, 0)' },
+          '50%': { boxShadow: '0 0 20px 4px rgba(249, 115, 22, 0.1)' },
         },
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
@@ -102,16 +103,16 @@ export default {
         },
       },
       boxShadow: {
-        'glow-accent': '0 0 30px rgba(99, 102, 241, 0.08)',
+        'glow-accent': '0 0 30px rgba(249, 115, 22, 0.08)',
         'glow-positive': '0 0 30px rgba(34, 197, 94, 0.08)',
         'glow-negative': '0 0 30px rgba(239, 68, 68, 0.08)',
-        'card': '0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.02)',
-        'card-hover': '0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(99, 102, 241, 0.12)',
+        'card': '0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.02)',
+        'card-hover': '0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(249, 115, 22, 0.14)',
         'elevated': '0 12px 32px rgba(0, 0, 0, 0.45)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'mesh-1': 'radial-gradient(at 20% 30%, #12102a 0px, transparent 50%), radial-gradient(at 80% 20%, #0c1525 0px, transparent 50%), radial-gradient(at 50% 80%, #08090d 0px, transparent 50%), radial-gradient(at 10% 60%, #0f0a20 0px, transparent 50%)',
+        'mesh-1': 'radial-gradient(at 25% 25%, rgba(249, 115, 22, 0.06) 0px, transparent 55%), radial-gradient(at 80% 15%, rgba(234, 179, 8, 0.04) 0px, transparent 50%), radial-gradient(at 50% 85%, rgba(249, 115, 22, 0.04) 0px, transparent 55%)',
       },
     },
   },

@@ -77,7 +77,7 @@ export const App = () => (
         toastOptions={{
           duration: 3000,
           style: {
-            background: 'rgba(15, 17, 23, 0.95)',
+            background: 'rgba(21, 20, 18, 0.95)',
             color: '#fff',
             border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: '12px',
